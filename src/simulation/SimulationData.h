@@ -27,6 +27,7 @@ public:
 
 		this->bodycount = bodycount;
 
+		Platform::copy(config->masses, mass, bodycount);
 		Platform::copy(config->positions, positions, bodycount);
 		Platform::copy(config->velocities, velocities, bodycount);
 

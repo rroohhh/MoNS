@@ -1,5 +1,7 @@
 #include "Gravity.h"
 
+// Todo: literally everything
+
 Gravity::Gravity(SimulationData * data) {
 	bodycount = &data->bodycount;
 	mass = data->mass;
