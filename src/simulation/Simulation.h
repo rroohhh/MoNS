@@ -51,7 +51,7 @@ public:
 
 				// ToDo call listeners
 
-				int totalSteps = (m_config->endTime / m_config->dt);
+				Simtypes::SIZE totalSteps = (m_config->endTime / m_config->dt);
 				Simtypes::FLOAT targetTime, reachedTime = 0;
 
 				for (int i = 0; i < totalSteps; i++) {
@@ -72,7 +72,7 @@ public:
 				}
 			});
 
-		simulationThread->detach();
+		//simulationThread->detach();
 
 		return 0;
 	}

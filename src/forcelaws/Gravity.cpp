@@ -33,15 +33,15 @@ void Gravity::apply(Simtypes::FLOAT simTime) {
 			dist = dist * dist * dist;
 
 			p = dx / dist;
-			accelerations[i].x += p * mass[j];
+			accelerations[i].x -= p * mass[j];
 			accelerations[j].x += p * mass[i];
 
 			p = dy / dist;
-			accelerations[i].y += p * mass[j];
+			accelerations[i].y -= p * mass[j];
 			accelerations[j].y += p * mass[i];
 
 			p = dz / dist;
-			accelerations[i].z += p * mass[j];
+			accelerations[i].z -= p * mass[j];
 			accelerations[j].z += p * mass[i];
 		}
 	}

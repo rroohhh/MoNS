@@ -47,6 +47,10 @@ Simtypes::FLOAT Leapfrog::step(Simtypes::FLOAT simTime) {
 		old_positions[i].x = tmp_position.x;
 		old_positions[i].y = tmp_position.y;
 		old_positions[i].z = tmp_position.z;
+
+		acceleration[i].x = 0;
+		acceleration[i].y = 0;
+		acceleration[i].z = 0;
 	}
 
 	return simTime;

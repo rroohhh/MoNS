@@ -84,7 +84,7 @@ public:
 	Simtypes::v3 * velocities;
 private:
 	void checkRows(std::vector<std::vector<std::string>> rows, Simtypes::SIZE bodycount, Simtypes::SIZE expectedColums, std::string dataName) {
-		if(rows.size() != bodycount) {
+		if(rows.size() < bodycount) {
 			std::cerr << dataName << " too short, only " << rows.size() << " rows found, expected " << bodycount << std::endl;
 			std::abort();
 		}
