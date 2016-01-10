@@ -11,14 +11,19 @@ int main(int argc, char ** argv) {
 	GLPlot plot;
 	double tmp;
 
-	float * buffer = Platform::allocate<float>(2);
+	float * buffer = nullptr;
 
 	sim.addStepListener([&plot, &tmp, &buffer, &argv](Simtypes::FLOAT simTime, Simtypes::SIZE bodycount, Simtypes::v3 * positions) {
+			if(buffer == nullptr) {
+				buffer = Platform::allocate<float>(bodycount);
+			}
+
 			if(std::fmod(simTime, std::stoi(std::string(argv[1]))) == 0) {
 				for (int i = 0; i < bodycount; i++) {
 					buffer[2 * i] = positions[i].x;
 					buffer[2 * i  + 1] = positions[i].y;
 				}
+
 				plot.plot(buffer, bodycount);
 			}
 		});
