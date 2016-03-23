@@ -11,14 +11,15 @@
 #define APPLICATION_NAME               "Modular nbody solver"
 #define APPLICATION_CODENAME           "MoNS"
 #define APPLICATION_COPYRIGHT_YEARS    "2016"
-#define APPLICATION_VERSION_MAJOR      1
-/* #undef APPLICATION_VERSION_MINOR */
+/* #undef APPLICATION_VERSION_MAJOR */
+#define APPLICATION_VERSION_MINOR      1
 /* #undef APPLICATION_VERSION_PATCH */
-#define APPLICATION_VERSION_TYPE       "SNAPSHOT"
-#define APPLICATION_VERSION_STRING     "1.0.0-SNAPSHOT"
+#define APPLICATION_VERSION_TYPE       "ALPHA"
+#define APPLICATION_VERSION_STRING     "0.1.0-ALPHA"
 #define APPLICATION_VENDOR_ID          "de.robihei"
 #define APPLICATION_VENDOR_NAME        "Robin Heinemann"
 #define APPLICATION_VENDOR_URL         "none (yet)"
+#define APPLICATION_VENDOR_EMAIL       "robin.ole.heinemann@t-online.de"
 #define APPLICATION_ID                 "de.robihei"
 
 #ifndef APPLICATION_NAME

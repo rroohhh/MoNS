@@ -11,14 +11,16 @@
 
 class SimulationConfig {
 public:
+	// build a config from preallcated arrays and known values
 	SimulationConfig(Simtypes::SIZE bodycount, Simtypes::FLOAT endTime, Simtypes::FLOAT dt,
 					 Simtypes::v3 * positions, Simtypes::v3 * velocities) :
 		bodycount(bodycount), endTime(endTime), dt(dt), positions(positions),
 		velocities(velocities)  {}
 
+	// read a config from file
 	SimulationConfig(std::string filename) {
 		try {
-			std::shared_ptr<cpptoml::table> table = cpptoml::parse_file("config.toml");
+			std::shared_ptr<cpptoml::table> table = cpptoml::parse_file(filename);
 
 			endTime = *table->get_qualified_as<double>("simulation.endTime");
 			dt = *table->get_qualified_as<double>("simulation.dt");
@@ -33,12 +35,15 @@ public:
 			DEBUGOUTPUT("dt: " << dt << std::endl);
 			DEBUGOUTPUT("bodycount: " << bodycount << std::endl);
 
+			// one single data file
 			if(table->contains_qualified("data.file")) {
 				std::string filename = *table->get_qualified_as<std::string>("data.file");
 
 				DEBUGOUTPUT("Using single data file: " << filename << std::endl);
 
 				readSingle(filename);
+
+			// split data files
 			} else {
 			    std::string masses_filename = *table->get_qualified_as<std::string>("data.masses");
 			    std::string positions_filename = *table->get_qualified_as<std::string>("data.positions");
@@ -60,7 +65,7 @@ public:
 		DEBUGONLY(
 			std::cout << "Data read: " << std::endl;
 			printBodies();
-			)
+			);
 	}
 
 	void printBodies() {
@@ -83,6 +88,7 @@ public:
 	Simtypes::v3 * positions;
 	Simtypes::v3 * velocities;
 private:
+	// check if all rows contain the expected number of colums, and if enough row for all particles are present
 	void checkRows(std::vector<std::vector<std::string>> rows, Simtypes::SIZE bodycount, Simtypes::SIZE expectedColums, std::string dataName) {
 		if(rows.size() < bodycount) {
 			std::cerr << dataName << " too short, only " << rows.size() << " rows found, expected " << bodycount << std::endl;
@@ -97,6 +103,7 @@ private:
 		}
 	}
 
+	// read the particle data from a single data file
 	void readSingle(std::string filename) {
 	    auto rows = CSVTable(filename.c_str()).getRows();
 
@@ -115,6 +122,7 @@ private:
 		}
 	}
 
+	// read the particle data from split data files
 	void readSplit(std::string masses_filename, std::string positions_filename, std::string velocities_filename) {
 		std::vector<std::vector<std::string>> rows;
 		auto masses_rows = CSVTable(masses_filename.c_str()).getRows();
@@ -136,7 +144,6 @@ private:
 			velocities[i].y = std::stod(velocities_rows[i][1]);
 			velocities[i].z = std::stod(velocities_rows[i][2]);
 		}
-
 	}
 };
 

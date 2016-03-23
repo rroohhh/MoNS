@@ -1,6 +1,8 @@
 #ifndef _SIMTYPES_H
 #define _SIMTYPES_H
 
+// basic type for the simulation
+
 class Simtypes {
 public:
 	typedef  unsigned long int SIZE;

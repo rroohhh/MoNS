@@ -3,6 +3,8 @@
 
 #include "../simulation/Simtypes.h"
 
+// interface of a integrator
+
 class Integrator {
 public:
 	virtual Simtypes::FLOAT step(Simtypes::FLOAT simTime) = 0;

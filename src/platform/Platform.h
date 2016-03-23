@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include "../simulation/Simtypes.h"
 
+// platform abstractions / helpers
+
 namespace Platform {
 	template<typename T>
 	inline static T * allocate(Simtypes::SIZE size) {

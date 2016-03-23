@@ -10,6 +10,8 @@
 #include "../platform/Platform.h"
 #include "../util/PhysicalConstants.h"
 
+// ToDo(robin): collision detection
+
 class Gravity : public ForceLaw {
 public:
 	Gravity(SimulationData * data);

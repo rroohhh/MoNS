@@ -4,6 +4,7 @@
 #include "../simulation/Simtypes.h"
 
 namespace PhysicalConstants {
+	// gravitational constant
 	static constexpr Simtypes::FLOAT gamma = 6.673e-11;
 }
 

@@ -5,6 +5,8 @@
 #include "Simtypes.h"
 #include "SimulationConfig.h"
 
+// container class for (nearly) all data used by a simulation
+
 class SimulationData {
 public:
 	Simtypes::v3 * positions;
@@ -27,10 +29,12 @@ public:
 
 		this->bodycount = bodycount;
 
+		// copy the known data to it's target location
 		Platform::copy(config->masses, mass, bodycount);
 		Platform::copy(config->positions, positions, bodycount);
 		Platform::copy(config->velocities, velocities, bodycount);
 
+		// init dt with the global config
 		for(Simtypes::SIZE i = 0; i < bodycount; i++) {
 			dt[i] = config->dt;
 		}

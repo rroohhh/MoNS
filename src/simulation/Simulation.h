@@ -16,6 +16,7 @@
 
 class Simulation {
 public:
+	// build a new simulation based on a simulationconfig
 	Simulation(SimulationConfig * config) {
 		m_config = config;
 
@@ -25,6 +26,7 @@ public:
 		m_integrator = new Leapfrog(m_data);
 	}
 
+	// parse the simulationconfig from a file
 	Simulation(std::string filename) : Simulation(new SimulationConfig(filename)) {}
 
 	int addStepListener(std::function<void(Simtypes::FLOAT, Simtypes::SIZE, Simtypes::v3 *)> listener) {
@@ -45,18 +47,21 @@ public:
 			std::abort();
 		}
 
+		// start simulation async in new thread
 		simulationThread = new std::thread([=] () {
-				// ToDo: flexstep? -> not here, maybe in integrator module calculate target timestep and in forcelaw use the calculated timestep
-				// or use force softening
-
-				// ToDo call listeners
+				// ToDo(robin): flexstep? -> not here, maybe in integrator module calculate target timestep and in forcelaw use the calculated timestep
+				// ToDo(robin): find good method for flexsteps
+				// ToDo(robin): are flexsteps actually needed?
+                // or use force softening
 
 				Simtypes::SIZE totalSteps = (m_config->endTime / m_config->dt);
 				Simtypes::FLOAT targetTime, reachedTime = 0;
 
+				// run through all timesteps
 				for (int i = 0; i < totalSteps; i++) {
 					targetTime = m_config->dt * i;
 
+					// basic flexstep support
 					do {
 						m_forcelaw->apply(targetTime);
 						reachedTime = m_integrator->step(targetTime);
@@ -72,11 +77,10 @@ public:
 				}
 			});
 
-		//simulationThread->detach();
-
 		return 0;
 	}
 
+	// join simulation thread to block execution until simulation ends
 	int waitToEnd() {
 		if(simulationThread == nullptr) {
 			std::cerr << "no simulation started" << std::endl;
@@ -93,7 +97,7 @@ private:
 	SimulationData * m_data;
 	SimulationConfig * m_config;
 
-	ForceLaw * m_forcelaw; // Also does Collision detection
+	ForceLaw * m_forcelaw; // also does Collision detection
     Integrator * m_integrator;
 
 	std::thread * simulationThread = nullptr;

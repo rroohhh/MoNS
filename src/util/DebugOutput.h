@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+// some convenience macros
+
 #ifdef NDEBUG
 #define DEBUGOUTPUT(args)
 #else

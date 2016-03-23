@@ -11,7 +11,8 @@ Leapfrog::Leapfrog(SimulationData * data) {
 }
 
 
-// Todo: Maybe SIMD
+// ToDo(robin): SIMD
+// calculate first step with euler's method, because no old position is known
 void Leapfrog::init(Simtypes::v3 * velocities) {
 	Platform::copy(positions, old_positions, *bodycount);
 
@@ -22,13 +23,16 @@ void Leapfrog::init(Simtypes::v3 * velocities) {
 		this_dt = dt[i];
 		dt2 = 0.5 * this_dt * this_dt;
 
+		// one iteration of euler's method
 		positions[i].x = old_positions[i].x + velocities[i].x * this_dt + acceleration[i].x * dt2;
 		positions[i].y = old_positions[i].y + velocities[i].y * this_dt + acceleration[i].y * dt2;
 		positions[i].z = old_positions[i].z + velocities[i].z * this_dt + acceleration[i].z * dt2;
 	}
 }
 
-// Todo: SIMD
+// ToDo(robin): SIMD
+// ToDo(robin): Flexsteps
+// now use actual leapfrog method
 Simtypes::FLOAT Leapfrog::step(Simtypes::FLOAT simTime) {
 	Simtypes::FLOAT dt2;
 	Simtypes::v3 tmp_position;
@@ -48,6 +52,7 @@ Simtypes::FLOAT Leapfrog::step(Simtypes::FLOAT simTime) {
 		old_positions[i].y = tmp_position.y;
 		old_positions[i].z = tmp_position.z;
 
+		// reset acceleration to zero for the next step
 		acceleration[i].x = 0;
 		acceleration[i].y = 0;
 		acceleration[i].z = 0;

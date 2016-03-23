@@ -10,7 +10,9 @@
 class CSVTable {
 public:
 	CSVTable(const char * filename, char seperator = ',');
+
 	std::vector<std::vector<std::string>> getRows();
+
 	~CSVTable();
 private:
 	std::string m_fileContent;
