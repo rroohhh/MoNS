@@ -7,7 +7,7 @@
 
 class AxisScale {
 public:
-	static int getOptimalExponent(double low, double high);
+    static int getOptimalExponent(double low, double high);
 };
 
 #endif

@@ -1,5 +1,54 @@
 #include "Gravity.h"
 
+// ToDo(robin): node list
+// ToDo(robin): interaction list
+// ToDo(robin): multiple bodies in one node
+
+// ToDo(robin): alignment?
+/*
+struct Node {
+	Simtypes::INT parent;
+	Simtypes::SIZE data;
+	Simtypes::INT siblings[8];
+	Simtypes::FLOAT boxSize;
+};
+
+void buildTree() {
+
+}
+
+Simtypes::FLOAT boxDimension() {
+	Simtypes::FLOAT max = 0;
+
+	for(Simtypes::SIZE i = 0; i < *bodycount; i++) {
+		max = max < positions[i].x ? positions[i].x : max;
+		max = max < positions[i].y ? positions[i].y : max;
+		max = max < positions[i].z ? positions[i].z : max;
+	}
+
+	return max;
+}
+
+void center() {
+	Simtypes::FLOAT x = 0, y = 0, z = 0;
+
+	for(Simtypes::SIZE i = 0; i < *bodycount; i++) {
+		x += positions[i].x;
+		y += positions[i].y;
+		z += positions[i].z;
+	}
+
+	x /= *bodycount;
+	y /= *bodycount;
+	z /= *bodycount;
+
+	for(Simtypes::SIZE i = 0; i < *bodycount; i++) {
+		positions[i].x -= x;
+		positions[i].y -= y;
+		positions[i].z -= z;
+	}
+}
+
 Gravity::Gravity(SimulationData * data) {
     bodycount     = &data->bodycount;
     mass          = data->mass;
@@ -23,6 +72,8 @@ void Gravity::apply() {
 // ToDo(robin): SIMD
 void Gravity::apply(Simtypes::FLOAT simTime) {
     auto count = *bodycount;
+
+
 
     Simtypes::FLOAT dx, dy, dz, dist, p;
 
@@ -52,3 +103,4 @@ void Gravity::apply(Simtypes::FLOAT simTime) {
         }
     }
 }
+*/

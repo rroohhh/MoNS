@@ -2,12 +2,11 @@
 
 #include "AxisScale.h"
 
-int AxisScale::getOptimalExponent(double low, double high)
-{
-	double range = high - low;
-	int rangeExponent = floor(log10(range));
-	
-	int countU = (int) floor(fabs(range / pow10(rangeExponent)));
+int AxisScale::getOptimalExponent(double low, double high) {
+    double range         = high - low;
+    int    rangeExponent = floor(log10(range));
 
-	return ((countU >= 3) ? rangeExponent : (rangeExponent - 1)); 
+    int countU = (int)floor(fabs(range / pow10(rangeExponent)));
+
+    return ((countU >= 3) ? rangeExponent : (rangeExponent - 1));
 }

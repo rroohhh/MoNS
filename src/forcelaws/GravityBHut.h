@@ -11,9 +11,9 @@
 
 // ToDo(robin): collision detection
 
-class Gravity {
+class GravityBHut {
 public:
-    Gravity(SimulationData * data);
+    GravityBHut(SimulationData * data);
 
     void apply(Simtypes::FLOAT simTime);
 
