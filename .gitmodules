@@ -1,0 +1,6 @@
+[submodule "src/fmt"]
+	path = lib/fmt
+	url = https://github.com/fmtlib/fmt
+[submodule "lib/cpptoml"]
+	path = lib/cpptoml
+	url = https://github.com/skystrife/cpptoml
