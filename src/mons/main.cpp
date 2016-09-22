@@ -2,10 +2,10 @@
 #include <iostream>
 #include <thread>
 
+#include "GLPlot.h"
 #include "bench/TimedBlock.h"
 #include "forcelaws/Gravity.h"
 #include "integrators/Leapfrog.h"
-#include "GLPlot.h"
 #include "simulation/Simulation.h"
 #include "util/CommandLineOptions.h"
 
@@ -27,13 +27,14 @@ int main(int argc, char ** argv) {
         //  buffer for plotting
         float * buffer = nullptr;
 
-        int delta_time = 100;
+        int delta_time = 10;
 
         sim.addStepListener([&](Simtypes::FLOAT simTime,
                                 Simtypes::SIZE  bodycount,
                                 Simtypes::v3 *  positions) {
+            TIMED_BLOCK(plot);
             if(buffer == nullptr) {
-                buffer = Platform::allocate<float>(bodycount);
+                buffer = Platform::allocate<float>(2 * bodycount);
             }
 
             if(std::fmod(simTime, delta_time) == 0) {

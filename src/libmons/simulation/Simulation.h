@@ -73,8 +73,13 @@ struct Simulation {
 
                 // basic flexstep support
                 do {
+                    TIMED_BLOCK(forcelaw);
                     m_forcelaw->apply(targetTime);
+                    END_BLOCK(forcelaw);
+
+                    TIMED_BLOCK(integrator);
                     reachedTime = m_integrator->step(targetTime);
+                    END_BLOCK(integrator);
                 } while(reachedTime < targetTime);
 
                 for(auto listener : *m_stepListener) {
