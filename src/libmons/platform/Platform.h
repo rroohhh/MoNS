@@ -5,6 +5,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <cinttypes>
 #include <unistd.h>
 
 // platform abstractions / helpers
@@ -47,6 +48,20 @@ namespace Platform {
 
 		return ret;
     }
+
+	#ifdef __i386
+	inline uint64_t rdtsc() {
+		uint64_t x;
+		asm volatile ("rdtsc" : "=A" (x));
+		return x;
+	}
+	#elif defined __amd64
+	inline uint64_t rdtsc() {
+		uint64_t a, d;
+		asm volatile ("rdtsc" : "=a" (a), "=d" (d));
+		return (d << 32) | a;
+	}
+	#endif
 }
 
 #endif

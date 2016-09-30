@@ -23,7 +23,9 @@ ssh_file::ssh_file(ssh_channel * chan) noexcept {
 
         while(ssh_channel_is_open(*chan)) {
             read = ssh_channel_read_timeout(*chan, buf, 2048, 0, 10);
-            if(read) { write(client_input[1], buf, read); }
+            if(read) {
+                int write = ::write(client_input[1], buf, read);
+            }
 
             read = ::read(client_output[0], buf, 2048);
             if(read == 0) {

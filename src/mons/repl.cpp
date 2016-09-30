@@ -7,31 +7,25 @@
 
 repl::repl(FILE * in, FILE * out, CommandHandler handler,
            const char * prompt) noexcept {
-    auto t = new std::thread([&]() {
+    auto t = new std::thread([=]() {
         // DEBUGGING ONLY!!!!!
-        if(!Platform::fork()) {
+        // if(!Platform::fork()) {
             init_readline(in, out);
-            // char * line;
-            char buf[1];
+            char * line;
 
-            printf("yay?\n");
-
-            while(!(read(fileno(in), buf, 1))) {
-				write(1, buf, 1);
-			}
-            // while((line = readline(prompt))) {
-            //     printf("yay!\n");
-            //     add_history(line);
-            //     free(line);
-            // }
-
-            printf("nay :(\n");
+            while((line = readline(prompt))) {
+                add_history(line);
+                free(line);
+            }
 
             fclose(in);
             fclose(out);
 
             exit(EXIT_SUCCESS);
-        }
+        // } else { // Need to close these because of shit... and linux...
+        //     fclose(in);
+        //     fclose(out);
+        // }
     });
 }
 

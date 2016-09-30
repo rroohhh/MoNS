@@ -12,6 +12,7 @@
 
 #include "../io/log.h"
 #include "../simulation/Simtypes.h"
+#include "../platform/Platform.h"
 
 using namespace io;
 
