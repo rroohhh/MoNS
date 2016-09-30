@@ -2,8 +2,10 @@
 #define _PLATFORM_H
 
 #include "../simulation/Simtypes.h"
+#include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 
 // platform abstractions / helpers
 
@@ -31,6 +33,19 @@ namespace Platform {
     template <typename T>
     inline static void deallocate(T * target) noexcept {
         return free((void *)target);
+    }
+
+    inline static int fork() {
+        auto ret = ::fork();
+        if(!ret) {
+            struct sigaction act;
+            act.sa_handler = SIG_DFL;
+            sigemptyset(&act.sa_mask);
+            act.sa_flags = 0;
+            sigaction(SIGINT, &act, 0);
+        }
+
+		return ret;
     }
 }
 

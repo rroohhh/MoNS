@@ -1,7 +1,7 @@
 PROJECT(mons)
 FILE (GLOB_RECURSE mons_SRCS *.cpp *.cxx *.cc *.C *.c)
 
-SET (mons_LIBS plot mons Threads::Threads)
+SET (mons_LIBS plot mons sshfile Threads::Threads readline)
 SET (mons_BIN "MoNS")
 
 ADD_EXECUTABLE(${mons_BIN} ${mons_SRCS})

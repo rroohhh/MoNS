@@ -2,17 +2,52 @@
 #include <iostream>
 #include <thread>
 
+#include <readline/history.h>
+#include <readline/readline.h>
+
 #include "GLPlot.h"
 #include "bench/TimedBlock.h"
 #include "forcelaws/Gravity.h"
 #include "integrators/Leapfrog.h"
+#include "platform/Platform.h"
 #include "simulation/Simulation.h"
+#include "ssh_file.h"
+#include "sshd.h"
 #include "util/CommandLineOptions.h"
+
+#define PROMPT "λ "
 
 using namespace io;
 
+void init_readline(FILE * infile = stdin, FILE * outfile = stdout) {
+    rl_instream  = infile;
+    rl_outstream = outfile;
+
+    rl_editing_mode = 0;
+}
+
 int main(int argc, char ** argv) {
     TIMED_BLOCK(setup);
+    std::thread([]() {
+        sshd listener("0.0.0.0", 8000);
+        while(true) {
+            auto chan = listener.accept();
+            if(!Platform::fork()) {
+                ssh_file sfile(&chan);
+                init_readline(sfile.infile(), sfile.outfile());
+                char * line;
+
+                while((line = readline(PROMPT))) {
+                    add_history(line);
+                    free(line);
+                }
+
+				sfile.disconnect();
+                exit(EXIT_SUCCESS);
+            }
+        }
+    }).detach();
+
     // parse the commandline options
     CommandLineOptions ops = CommandLineOptions(argc, argv);
 

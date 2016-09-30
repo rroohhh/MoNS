@@ -4,3 +4,6 @@
 [submodule "lib/cpptoml"]
 	path = lib/cpptoml
 	url = https://github.com/skystrife/cpptoml
+[submodule "lib/libssh"]
+	path = lib/libssh
+	url = https://git.libssh.org/projects/libssh.git
