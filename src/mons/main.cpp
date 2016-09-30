@@ -29,7 +29,7 @@ int main(int argc, char ** argv) {
     //     }
     // }).detach();
 
-	repl r(stdin, stdout, CommandHandler());
+	// repl r(stdin, stdout, CommandHandler());
 
     // parse the commandline options
     CommandLineOptions ops = CommandLineOptions(argc, argv);

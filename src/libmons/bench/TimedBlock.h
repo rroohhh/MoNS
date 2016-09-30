@@ -6,13 +6,12 @@
 #ifndef _TIMEDBLOCK_H
 #define _TIMEDBLOCK_H
 
-#include <chrono>
 #include <string>
 #include <unordered_map>
 
 #include "../io/log.h"
-#include "../simulation/Simtypes.h"
 #include "../platform/Platform.h"
+#include "../simulation/Simtypes.h"
 
 using namespace io;
 
@@ -22,21 +21,17 @@ using namespace io;
 #define END_BLOCK(name) PASTE(TimedBlock, name).end();
 
 class TimedBlock {
-    typedef std::chrono::high_resolution_clock clock;
-    typedef std::chrono::time_point<clock>     time_point;
-    typedef std::chrono::nanoseconds           duration;
-
     struct timing_record {
-        duration       dur;
+        uint64_t       dur;
         Simtypes::SIZE count;
     };
 
 public:
-    TimedBlock(std::string name) noexcept : start(clock::now()), name(name) {}
+    TimedBlock(std::string name) noexcept : start(Platform::rdtsc()), name(name) {}
 
     void end() noexcept {
         if(!ended) {
-            auto   duration = clock::now() - start;
+            auto   duration = Platform::rdtsc() - start;
             auto & record   = TimedBlock::timings[name];
             record.dur += duration;
             record.count++;
@@ -48,16 +43,15 @@ public:
     static void output_timings() noexcept {
         log::info("{:>20}{:>20}{:>20}", "name", "total", "avg");
         for(const auto & record : timings) {
-            log::info("{:>20}{:>18}ns{:>18}ns", record.first,
-                      record.second.dur.count(),
-                      record.second.dur.count() / record.second.count);
+            log::info("{:>20}{:>18}cy{:>18}cy", record.first, record.second.dur,
+                      record.second.dur / record.second.count);
         }
     }
 
     static std::unordered_map<std::string, timing_record> timings;
 
 private:
-    time_point  start;
+    uint64_t  start;
     std::string name;
     bool        ended = false;
 };
