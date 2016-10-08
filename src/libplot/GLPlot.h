@@ -7,8 +7,8 @@
 #include <GL/gl.h>
 
 // ToDo(robin): minimum sfml includes for renderwindow yet to be found
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window.hpp>
+#include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Window.hpp"
 
 // does not work -> uses map
 // #include <SFML/Graphics.hpp>
