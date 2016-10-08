@@ -8,3 +8,6 @@
 	path = lib/libssh
 	url = https://github.com/rroohhh/libssh.git
 #	url = https://git.libssh.org/projects/libssh.git
+[submodule "lib/libedit"]
+	path = lib/libedit
+	url = https://github.com/rroohhh/libedit.git

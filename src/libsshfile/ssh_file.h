@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
+#include <pty.h>
 
 // a file, relayed over a tcp socket
 class ssh_file {

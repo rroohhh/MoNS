@@ -9,17 +9,21 @@
 #include "CommandHandler.h"
 #include "platform/Platform.h"
 #include <cstdio>
-#include <readline/history.h>
-#include <readline/readline.h>
+#include "io/log.h"
+//#include <readline/history.h>
+//#include <readline/readline.h>
+#include "histedit.h"
 #include <thread>
 
 class repl {
 public:
-    repl(FILE * in, FILE * out, CommandHandler handler,
-         const char * prompt = "λ ") noexcept;
+    repl(FILE * in, FILE * out, CommandHandler handler) noexcept;
 
 private:
-    static inline void init_readline(FILE * infile, FILE * outfile) noexcept;
+    void init_editline(FILE * infile, FILE * outfile) noexcept;
+    EditLine * el = NULL;
+    History *  hist;
+    HistEvent  ev;
 };
 
 #endif

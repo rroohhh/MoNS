@@ -1,7 +1,7 @@
 PROJECT(libsshfile)
 FILE (GLOB_RECURSE libsshfile_SRCS *.cpp *.cxx *.cc *.C *.c)
 
-SET (libsshfile_LIBS ${LIBSSH_SHARED_LIBRARY} mons Threads::Threads)
+SET (libsshfile_LIBS ${LIBSSH_SHARED_LIBRARY} mons Threads::Threads util)
 SET (libsshfile_BIN "sshfile")
 
 ADD_LIBRARY(${libsshfile_BIN} ${libsshfile_SRCS})

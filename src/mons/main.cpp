@@ -20,16 +20,16 @@ using namespace io;
 
 int main(int argc, char ** argv) {
     TIMED_BLOCK(setup);
-    // std::thread([]() {
-    //     sshd listener("0.0.0.0", 8000);
-    //     while(true) {
-    //         auto     chan = listener.accept();
-    //         ssh_file sfile(&chan);
-    //         repl(sfile.infile(), sfile.outfile(), CommandHandler());
-    //     }
-    // }).detach();
+    std::thread([]() {
+        sshd listener("0.0.0.0", 8000);
+        while(true) {
+            auto     chan = listener.accept();
+            ssh_file sfile(&chan);
+            repl(sfile.infile(), sfile.outfile(), CommandHandler());
+        }
+    }).detach();
 
-    repl r(stdin, stdout, CommandHandler());
+    // repl r(stdin, stdout, CommandHandler());
 
     // parse the commandline options
     CommandLineOptions ops = CommandLineOptions(argc, argv);
