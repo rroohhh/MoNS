@@ -13,4 +13,4 @@
 	url = https://github.com/rroohhh/libedit.git
 [submodule "lib/sfml"]
 	path = lib/sfml
-	url = https://github.com/SFML/SFML
+	url = https://github.com/rroohhh/SFML
