@@ -1,12 +1,13 @@
 PROJECT(libplot)
 FILE (GLOB_RECURSE libplot_SRCS *.cpp *.cxx *.cc *.C *.c)
 
+#MESSAGE(${CMAKE_MODULE_PATH})
 #FIND_PACKAGE(SFML COMPONENTS system window graphics)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(GLEW REQUIRED)
 
 SET (libplot_BIN "plot")
-SET (libplot_LIBS ${SFML_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} mons fmt Threads::Threads sfml-system sfml-window sfml-graphics)
+SET (libplot_LIBS ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} mons fmt Threads::Threads sfml-system sfml-window sfml-graphics)
 
 ADD_LIBRARY(${libplot_BIN} ${libplot_SRCS} glyphs.o)
 
