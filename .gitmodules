@@ -3,7 +3,7 @@
 	url = https://github.com/fmtlib/fmt
 [submodule "lib/cpptoml"]
 	path = lib/cpptoml
-	url = https://github.com/skystrife/cpptoml
+	url = https://github.com/rroohhh/cpptoml
 [submodule "lib/libssh"]
 	path = lib/libssh
 	url = https://github.com/rroohhh/libssh.git
