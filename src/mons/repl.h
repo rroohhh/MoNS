@@ -7,23 +7,48 @@
 #define _REPL_H
 
 #include "CommandHandler.h"
-#include "platform/Platform.h"
-#include <cstdio>
 #include "io/log.h"
-//#include <readline/history.h>
-//#include <readline/readline.h>
-#include "histedit.h"
+#include "platform/Platform.h"
+#include "readline.h"
+#include "string_helper.h"
+#include <cstdio>
 #include <thread>
 
+template <typename T>
 class repl {
 public:
-    repl(FILE * in, FILE * out, CommandHandler handler) noexcept;
+	repl(T io, CommandHandler handler) noexcept {
+		auto t = new std::thread([=]() {
+			int         length;
+			readline<T> rl(1024, io);
+			auto        prompt = "λ ";
+			rl.add_completer(complete_from_canidates({
+				{"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"},
+				{"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"},
+				{"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"},
+				{"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"},
+				{"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"},
+			}));
+
+			io::log::debug("init done");
+
+			auto line = rl.getline(prompt);
+
+			while(line) {
+				auto l = line->unpack();
+				if(!whitespace_only(l)) {
+					io::log::info("got line: {}", l);
+					rl.history_add(*line);
+				}
+
+				line = rl.getline(prompt);
+			}
+
+			rl.finish();
+		});
+	}
 
 private:
-    void init_editline(FILE * infile, FILE * outfile) noexcept;
-    EditLine * el = NULL;
-    History *  hist;
-    HistEvent  ev;
 };
 
 #endif

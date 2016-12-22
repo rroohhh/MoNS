@@ -2,9 +2,6 @@
 #include <iostream>
 #include <thread>
 
-#include <readline/history.h>
-#include <readline/readline.h>
-
 #include "GLPlot.h"
 #include "bench/TimedBlock.h"
 #include "forcelaws/Gravity.h"
@@ -19,23 +16,27 @@
 using namespace io;
 
 int main(int argc, char ** argv) {
-    TIMED_BLOCK(setup);
-    std::thread([]() {
-        sshd listener("0.0.0.0", 8000);
-        while(true) {
-            auto     chan = listener.accept();
-            ssh_file sfile(&chan);
-            repl(sfile.infile(), sfile.outfile(), CommandHandler());
-        }
-    }).detach();
+	TIMED_BLOCK(setup);
+	FILE * logfile = fopen("mons.log", "aw");
+	// redirect log output to file
+	io::log::log_outputs.erase("stdout");
+	io::log::log_outputs["logfile"] = logfile;
 
-    // repl r(stdin, stdout, CommandHandler());
+	std::thread([]() {
+		sshd listener("0.0.0.0", 8000);
+		while(true) {
+			auto io = listener.accept();
+			repl<sshio>(io, CommandHandler());
+		}
+	}).detach();
 
-    // parse the commandline options
-    CommandLineOptions ops = CommandLineOptions(argc, argv);
+	repl<stdio> r({}, CommandHandler());
 
-    // build new simulation from configfile
-    Simulation<Gravity, Leapfrog> sim(ops.configFile());
+	// parse the commandline options
+	CommandLineOptions ops = CommandLineOptions(argc, argv);
+
+	// build new simulation from configfile
+	Simulation<Gravity, Leapfrog> sim(ops.configFile());
 
     // plotting handler
     if(ops.gui()) {
@@ -71,12 +72,12 @@ int main(int argc, char ** argv) {
         [](Simtypes::SIZE bodycount, Simtypes::v3 * positions) {
             log::info("Simulation finished");
             for(Simtypes::SIZE i = 0; i < bodycount; i++) {
-                log::info("{}\t{}\t{}", positions[i].pos[0],
-                          positions[i].pos[1], positions[i].pos[2]);
-            }
-        });
+				log::info("{}\t{}\t{}", positions[i].pos[0],
+						  positions[i].pos[1], positions[i].pos[2]);
+			}
+		});
 
-    END_BLOCK(setup)
+	END_BLOCK(setup)
 
-    sim.waitToEnd();
+	sim.waitToEnd();
 }

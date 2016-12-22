@@ -15,22 +15,15 @@ ssh_file::ssh_file(ssh_channel * chan) noexcept {
 
     int master;
 
-    struct winsize win;
-    win.ws_col    = 80;
-    win.ws_row    = 24;
-    win.ws_xpixel = 480;
-    win.ws_ypixel = 192;
+    struct termios term;
+    tcgetattr(0, &term);
+    cfmakeraw(&term);
 
-	struct termios term;
-	tcgetattr(0, &term);
-	// termios.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
-	cfmakeraw(&term);
-
-    if(!::forkpty(&master, nullptr, &term, &win)) {
-		int flags = fcntl(0, F_GETFL, 0);
-		fcntl(0, F_SETFL, flags | FNDELAY);
-		flags = fcntl(1, F_GETFL, 0);
-		fcntl(1, F_SETFL, flags | FNDELAY);
+    if(!::forkpty(&master, nullptr, &term, NULL)) {
+        int flags = fcntl(0, F_GETFL, 0);
+        fcntl(0, F_SETFL, flags | FNDELAY);
+        flags = fcntl(1, F_GETFL, 0);
+        fcntl(1, F_SETFL, flags | FNDELAY);
         // close(client_input[0]);
         // close(client_output[1]);
         char        buf[2048];
@@ -53,7 +46,7 @@ ssh_file::ssh_file(ssh_channel * chan) noexcept {
                 exit(EXIT_SUCCESS);
             } else if(read > 0) {
                 s.assign(buf, read);
-                s = std::regex_replace(s, ln, "\r\n");
+                // s = std::regex_replace(s, ln, "\r\n");
 
                 ssh_channel_write(*chan, s.c_str(), s.size());
             }
@@ -61,18 +54,15 @@ ssh_file::ssh_file(ssh_channel * chan) noexcept {
 
         exit(EXIT_SUCCESS);
     } else {
-		int flags = fcntl(master, F_GETFL, 0);
-		fcntl(master, F_SETFL, flags | FNDELAY);
-		// fcntl(STDIN_FILENO, F_SETFL, FNDELAY);
+        // int flags = fcntl(master, F_GETFL, 0);
+        // fcntl(master, F_SETFL, flags | FNDELAY);
+        // fcntl(STDIN_FILENO, F_SETFL, FNDELAY);
+        tcsetattr(master, TCSAFLUSH, &term);
 
-
-        infile_  = fdopen(master, "r");
-		// outfile_ = infile_;
-        outfile_ = fdopen(master, "w");
-		fcntl(fileno(outfile_), F_SETFL, flags | FNDELAY);
-		fcntl(fileno(infile_), F_SETFL, flags | FNDELAY);
-		fcntl(fileno(outfile_), F_SETFL, flags | O_NONBLOCK);
-		fcntl(fileno(infile_), F_SETFL, flags | O_NONBLOCK);
+        infile_ = fdopen(master, "w+");
+		outfile_ = infile_;
+        // outfile_ = infile_;
+        // outfile_ = fdopen(master, "w");
         // close(client_input[1]);
         // close(client_output[0]);
     }

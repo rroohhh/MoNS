@@ -14,7 +14,6 @@
 #include "../simulation/Simtypes.h"
 
 using namespace io;
-
 #define PASTE_(a, b) a##b
 #define PASTE(a, b) PASTE_(a, b)
 #define TIMED_BLOCK(name) TimedBlock PASTE(TimedBlock, name)(#name)

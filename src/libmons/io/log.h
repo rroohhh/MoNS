@@ -31,7 +31,8 @@ namespace io {
             static inline void log_to_all(std::string identifier,
                                           Args... args) {
                 auto log_line = detail::log_format(identifier, args...);
-                for(auto file : log_outputs) {
+				for(auto file : log_outputs) {
+					fmt::print(stderr, "{}\n", file.first);
                     fmt::print(file.second, "{}", log_line);
                 }
             }
