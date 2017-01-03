@@ -15,7 +15,7 @@ before_install:
 
 script:
       - cd build
-      - cmake && make
+      - cmake .. && make
 
 addons:
   coverity_scan:
