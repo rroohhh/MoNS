@@ -32,8 +32,7 @@ namespace io {
                                           Args... args) {
                 auto log_line = detail::log_format(identifier, args...);
 				for(auto file : log_outputs) {
-					fmt::print(stderr, "{}\n", file.first);
-                    fmt::print(file.second, "{}", log_line);
+					fmt::print(file.second, "{}", log_line);
                 }
             }
         }

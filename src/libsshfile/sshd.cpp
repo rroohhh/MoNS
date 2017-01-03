@@ -14,8 +14,13 @@ sshd::sshd(std::string addr, unsigned int port) noexcept {
 
     ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDADDR, addr.c_str());
     ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_BINDPORT, &port);
-    ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_RSAKEY,
-                         KEYS_FOLDER "ssh_host_rsa_key");
+	ssh_bind_options_set(sshbind, SSH_BIND_OPTIONS_RSAKEY,
+						 KEYS_FOLDER "ssh_host_rsa_key");
+
+	// TODO(robin): Why is this needed here?
+	FILE * logfile = fopen("mons.log", "aw");
+	io::log::log_outputs.erase("stdout");
+	io::log::log_outputs["logfile"] = logfile;
 
     if(ssh_bind_listen(sshbind) < 0) {
         log::err("Error listening to socket: {}\n", ssh_get_error(sshbind));
@@ -26,13 +31,13 @@ sshd::sshd(std::string addr, unsigned int port) noexcept {
 sshio sshd::accept() noexcept {
     ssh_session session;
     ssh_message message;
-    ssh_channel chan  = 0;
+	ssh_channel chan  = 0;
 	int         auth  = 0;
 	int         shell = 0;
 	int         r;
 	int         width, height;
 
-    session = ssh_new();
+	session = ssh_new();
 	r       = ssh_bind_accept(sshbind, session);
 
 	if(r == SSH_ERROR) {
@@ -46,7 +51,7 @@ sshio sshd::accept() noexcept {
     }
 
     /* proceed to authentication */
-    auth = authenticate(session);
+	auth = authenticate(session);
 	if(!auth) {
 		log::err("Authentication error: {}\n", ssh_get_error(session));
 		ssh_disconnect(session);
@@ -70,13 +75,13 @@ sshio sshd::accept() noexcept {
             }
         } else {
             if(!chan) {
-                log::err("Error: client did not ask for a channel session "
+				log::err("Error: client did not ask for a channel session "
 						 "({})\n",
 						 ssh_get_error(session));
 				ssh_finalize();
 				return {nullptr, nullptr};
             }
-        }
+		}
 	} while(!chan);
 
 	do {
@@ -91,7 +96,7 @@ sshio sshd::accept() noexcept {
                 ssh_message_channel_request_reply_success(message);
                 ssh_message_free(message);
                 break;
-            }
+			}
 			ssh_message_reply_default(message);
 			ssh_message_free(message);
 		} else {

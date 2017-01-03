@@ -6,6 +6,14 @@
 #ifndef _COMMANDHANDLER_H
 #define _COMMANDHANDLER_H
 
-class CommandHandler {};
+#include "simulation/Simulation.h"
+
+class CommandHandler {
+public:
+// CommandHandler(Simulation * sim) sim(sim) {}
+
+private:
+//    Simulation * sim;
+};
 
 #endif

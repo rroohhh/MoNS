@@ -9,10 +9,11 @@
 #include "platform/Platform.h"
 #include "repl.h"
 #include "simulation/Simulation.h"
-#include "ssh_file.h"
 #include "sshd.h"
 #include "util/CommandLineOptions.h"
 
+
+using namespace std::chrono_literals;
 using namespace io;
 
 int main(int argc, char ** argv) {
@@ -21,17 +22,17 @@ int main(int argc, char ** argv) {
 	// redirect log output to file
 	io::log::log_outputs.erase("stdout");
 	io::log::log_outputs["logfile"] = logfile;
+	 
 
-	std::thread([]() {
+	std::thread ssh_thread([&]() {
 		sshd listener("0.0.0.0", 8000);
 		while(true) {
 			auto io = listener.accept();
 			repl<sshio>(io, CommandHandler());
 		}
-	}).detach();
-
+	});
+	 
 	repl<stdio> r({}, CommandHandler());
-
 	// parse the commandline options
 	CommandLineOptions ops = CommandLineOptions(argc, argv);
 
@@ -69,9 +70,9 @@ int main(int argc, char ** argv) {
 
     // print some information
     sim.addFinishListener(
-        [](Simtypes::SIZE bodycount, Simtypes::v3 * positions) {
-            log::info("Simulation finished");
-            for(Simtypes::SIZE i = 0; i < bodycount; i++) {
+		[](Simtypes::SIZE bodycount, Simtypes::v3 * positions) {
+			log::info("Simulation finished");
+			for(Simtypes::SIZE i = 0; i < bodycount; i++) {
 				log::info("{}\t{}\t{}", positions[i].pos[0],
 						  positions[i].pos[1], positions[i].pos[2]);
 			}

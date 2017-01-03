@@ -27,6 +27,20 @@ struct stdio {
 		tcsetattr(in, TCSANOW, &settings);
 	}
 
+	stdio(const stdio & other) : in(other.in), out(other.out), old_settings(other.old_settings) {
+		termios settings;
+		tcgetattr(in, &settings);
+		settings.c_iflag |= IGNBRK;
+		settings.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
+		settings.c_lflag &=
+			~(ICANON | ECHO | ECHOK | ECHOE | ECHONL | ISIG | IEXTEN);
+		settings.c_cflag &= ~CSIZE;
+		settings.c_cflag |= CS8;
+		settings.c_cc[VMIN]  = 1;
+		settings.c_cc[VTIME] = 0;
+		tcsetattr(in, TCSANOW, &settings);
+	}
+
 	~stdio() noexcept { tcsetattr(in, TCSANOW, &old_settings); }
 
 	int write(const char * buffer, const int size) const noexcept {

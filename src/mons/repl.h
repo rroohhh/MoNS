@@ -22,22 +22,16 @@ public:
 			int         length;
 			readline<T> rl(1024, io);
 			auto        prompt = "λ ";
-			rl.add_completer(complete_from_canidates({
-				{"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"},
-				{"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"},
-				{"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"},
-				{"abc"}, {"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"}, {"abc"},
-				{"def"}, {"hjk"}, {"abc"}, {"def"}, {"hjk"},
-			}));
+//			rl.add_completer(handler.completer());
 
-			io::log::debug("init done");
+			io::log::debug("repl: init done");
 
 			auto line = rl.getline(prompt);
 
 			while(line) {
 				auto l = line->unpack();
 				if(!whitespace_only(l)) {
-					io::log::info("got line: {}", l);
+					io::log::debug("repl: got line: {}", l);
 					rl.history_add(*line);
 				}
 
