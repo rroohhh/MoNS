@@ -12,10 +12,7 @@ env:
 
 before_install:
       - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
-
-script:
-      - cd build
-      - cmake .. && make
+      - sudo apt-get update -qq
 
 addons:
   coverity_scan:
@@ -25,4 +22,12 @@ addons:
     notification_email: robin.ole.heinemann@t-online.de
     build_command_prepend: "<Your build preprocessing command here>"
     build_command:   "make"
+  apt:
+	sources:
+		- ubuntu-toolchain-r-test
+	packages:
+		- g++-5
 
+script:
+      - cd build
+      - cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5.. && make
