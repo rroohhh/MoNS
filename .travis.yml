@@ -23,10 +23,10 @@ addons:
     build_command_prepend: "<Your build preprocessing command here>"
     build_command:   "make"
   apt:
-	sources:
-		- ubuntu-toolchain-r-test
-	packages:
-		- g++-5
+    sources:
+        - ubuntu-toolchain-r-test
+    packages:
+        - g++-5
 
 script:
       - cd build
