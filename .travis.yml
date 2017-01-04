@@ -18,6 +18,7 @@ addons:
   apt:
     sources:
         - ubuntu-toolchain-r-test
+        - kalakris-cmake
     packages:
         - g++-5
         - cmake
