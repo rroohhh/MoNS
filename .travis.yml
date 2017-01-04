@@ -24,6 +24,8 @@ addons:
     packages:
         - g++-5
         - cmake
+        - xorg-dev
+        - xrandr-dev
   coverity_scan:
     project:
       name: "rroohhh/MoNS"
