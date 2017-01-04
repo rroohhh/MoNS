@@ -53,7 +53,8 @@ addons:
       description: "<Your project description here>"
     notification_email: robin.ole.heinemann@t-online.de
     build_command_prepend: "<Your build preprocessing command here>"
-    build_command:   "make"
+    build_command:   "cd build && cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .. && make -j5"
+    branch_pattern: master
 
 script:
       - cd build
