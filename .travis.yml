@@ -4,6 +4,9 @@ dist: trusy
 
 language: cpp
 
+cache:
+      apt: true
+
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
@@ -15,6 +18,12 @@ before_install:
       - sudo apt-get update -qq
 
 addons:
+  apt:
+    sources:
+        - ubuntu-toolchain-r-test
+    packages:
+        - g++-5
+        - cmake
   coverity_scan:
     project:
       name: "rroohhh/MoNS"
@@ -22,13 +31,7 @@ addons:
     notification_email: robin.ole.heinemann@t-online.de
     build_command_prepend: "<Your build preprocessing command here>"
     build_command:   "make"
-  apt:
-    sources:
-        - ubuntu-toolchain-r-test
-    packages:
-        - g++-5
-        - cmake
 
 script:
       - cd build
-      - cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .. && make
+      - cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc .. && make
