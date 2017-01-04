@@ -23,6 +23,7 @@ before_install:
         else
           brew install cmake
         fi
+      - cd ..
 addons:
   apt:
     sources:
