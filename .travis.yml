@@ -30,7 +30,7 @@ addons:
       name: "rroohhh/MoNS"
       description: "<Your project description here>"
     notification_email: robin.ole.heinemann@t-online.de
-    build_command_prepend: "cd build && cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .."
+    build_command_prepend: "cd build && cmake .."
     build_command:   "make -j2"
     branch_pattern: master
   apt:
