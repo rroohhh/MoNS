@@ -25,6 +25,14 @@ before_install:
         fi
       - cd ..
 addons:
+  coverity_scan:
+    project:
+      name: "rroohhh/MoNS"
+      description: "<Your project description here>"
+    notification_email: robin.ole.heinemann@t-online.de
+    build_command_prepend: "cd build && cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .."
+    build_command:   "make -j2"
+    branch_pattern: master
   apt:
     sources:
         - ubuntu-toolchain-r-test
@@ -47,15 +55,7 @@ addons:
         - libsndfile1-dev
         - libopenal-dev
         - libjpeg62
-  coverity_scan:
-    project:
-      name: "rroohhh/MoNS"
-      description: "<Your project description here>"
-    notification_email: robin.ole.heinemann@t-online.de
-    build_command_prepend: "<Your build preprocessing command here>"
-    build_command:   "cd build && cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .. && make -j5"
-    branch_pattern: master
 
 script:
       - cd build
-      - cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .. && make
+      - cmake -DCMAKE_CXX_COMPILER=g++-5 -DCMAKE_C_COMPILER=gcc-5 .. && make -j2
