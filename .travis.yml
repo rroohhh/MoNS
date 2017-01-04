@@ -31,8 +31,21 @@ addons:
     packages:
         - g++-5
         - cmake
-        - xorg-dev
         - libxrandr-dev
+        - libudev-dev
+        - libpthread-stubs0-dev
+        - libgl1-mesa-dev
+        - libx11-dev
+        - libx11-xcb-dev
+        - libxcb-image0-dev
+        - libxcb-randr0-dev
+        - libfreetype6-dev
+        - libglew-dev
+        - libjpeg8-dev
+        - libgpgme11-dev
+        - libsndfile1-dev
+        - libopenal-dev
+        - libjpeg62
   coverity_scan:
     project:
       name: "rroohhh/MoNS"
