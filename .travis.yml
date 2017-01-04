@@ -22,7 +22,7 @@ addons:
         - g++-5
         - cmake
         - xorg-dev
-        - xrandr-dev
+        - libxrandr-dev
   coverity_scan:
     project:
       name: "rroohhh/MoNS"
