@@ -57,9 +57,9 @@ int ShaderProgram::m_newShader(int type, const char * source) {
 
     char * buf = (char *)malloc((sourceLength + 1) * sizeof(char));
 
-    strcpy(buf, source);
+//    strcpy(buf, source);
 
-    glShaderSource(id, 1, &buf, &sourceLength);
+    glShaderSource(id, 1, &source, &sourceLength);
     glCompileShader(id);
 
     glGetShaderiv(id, GL_COMPILE_STATUS, &tmp);
