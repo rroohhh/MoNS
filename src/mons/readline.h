@@ -20,9 +20,9 @@ struct history {
         hist.reserve(size);
     }
 
-	void add(utf8string s) noexcept {
-		hist.emplace(hist.begin() + (index++ % size_), s);
-	}
+    void add(utf8string s) noexcept {
+        hist.emplace(hist.begin() + (index++ % size_), s);
+    }
 
     int size() const noexcept { return hist.size(); }
 
@@ -47,25 +47,25 @@ private:
 };
 
 using completion_function =
-	std::function<std::vector<utf8string>(const utf8string s)>;
+    std::function<std::vector<utf8string>(const utf8string s)>;
 
 static completion_function
 complete_from_canidates(std::vector<utf8string> possible_canidates) {
-	return [=](utf8string current) -> std::vector<utf8string> {
-		std::vector<utf8string> canidates;
+    return [=](utf8string current) -> std::vector<utf8string> {
+        std::vector<utf8string> canidates;
 
-		for(const auto & c : possible_canidates) {
-			if(c.begins_with(current)) canidates.push_back(c);
-		}
+        for(const auto & c : possible_canidates) {
+            if(c.begins_with(current)) canidates.push_back(c);
+        }
 
-		return canidates;
+        return canidates;
 
-	};
+    };
 }
 
 template <typename T>
 struct readline {
-	template <typename... Args>
+    template <typename... Args>
     readline(int hist_size, Args &&... args) noexcept
         : io(std::forward<Args>(args)...), h(hist_size) {}
 
@@ -114,12 +114,12 @@ struct readline {
             return;
         } else if(completions.size() == 0) {
             return;
-		}
+        }
 
-		// NOTE(robin): output a fancy table
-		// NOTE(robin): do i want sorting?
-		int width = io.width();
-		int max_width = 0;
+        // NOTE(robin): output a fancy table
+        // NOTE(robin): do i want sorting?
+        int width     = io.width();
+        int max_width = 0;
 
         for(const auto s : completions) {
             if(max_width < s.length()) max_width = s.length();
@@ -256,6 +256,7 @@ struct readline {
 
                 searching_off();
                 io.write(crlf, 2);
+				previous_written = "";
 
                 return ret;
                 break;
@@ -301,15 +302,27 @@ struct readline {
     }
 
     void update_line() noexcept {
-        io.write(csi_sequence::clear_line, sizeof(csi_sequence::clear_line));
-        io.write(csi_sequence::beginning_of_line,
-                 sizeof(csi_sequence::beginning_of_line));
+        utf8string to_write =
+            previous_written.delta_update(prompt + current_read);
 
-        io.write(prompt.raw_data(), prompt.raw_length());
-        io.write(current_read.raw_data(), current_read.raw_length());
+        int i = 0;
 
-        io.write(csi_sequence::beginning_of_line,
-                 sizeof(csi_sequence::beginning_of_line));
+        for(i = 0; i < to_write.length(); i++) {
+            if(!to_write[i].empty()) break;
+        }
+
+        io.write(csi_sequence::goto_x(i));
+
+		for(int j = i; j < to_write.length(); j++) {
+			if(!(to_write[j].empty()))
+				io.write(to_write[j].chars, 4);
+			else {
+				io.write((short *)&csi_sequence::arrow_right, 1);
+			}
+		}
+
+        previous_written = prompt + current_read;
+
 
         if(state == searching) {
             io.write((short *)&csi_sequence::arrow_down, 1);
@@ -325,19 +338,23 @@ struct readline {
             io.write((short *)&csi_sequence::arrow_up, 1);
         }
 
-        io.write(csi_sequence::beginning_of_line,
-                 sizeof(csi_sequence::beginning_of_line));
 
-        for(int i = 0; i < cursor_pos + (int)prompt.length(); i++) {
-            io.write((short *)&csi_sequence::arrow_right, 1);
-        }
+		io.write(csi_sequence::goto_x(cursor_pos + (int)prompt.length()));
+        /*
+		 * io.write(csi_sequence::beginning_of_line,
+         *          sizeof(csi_sequence::beginning_of_line));
+		 *
+         * for(int i = 0; i < cursor_pos + (int)prompt.length(); i++) {
+         *     io.write((short *)&csi_sequence::arrow_right, 1);
+         * }
+		 */
     }
 
-	void history_add(const utf8string s) noexcept { h.add(s); }
+    void history_add(const utf8string s) noexcept { h.add(s); }
 
-	void add_completer(completion_function f) { completer.push_back(f); }
+    void add_completer(completion_function f) { completer.push_back(f); }
 
-	void finish() { io.close(); }
+    void finish() { io.close(); }
 
 private:
     enum readline_state { normal, searching, completing };
@@ -351,6 +368,7 @@ private:
 
     utf8string old_read;
     utf8string current_read;
+    utf8string previous_written;
 
     utf8string prompt;
 

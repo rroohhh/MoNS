@@ -6,110 +6,168 @@
 #ifndef _UTF8_H
 #define _UTF8_H
 
+#include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 struct utf8char {
-	char chars[4];
+    char chars[4];
 
-	utf8char() noexcept {
-		chars[0] = 0;
-		chars[1] = 0;
-		chars[2] = 0;
-		chars[3] = 0;
-	}
+    utf8char() noexcept {
+        chars[0] = 0;
+        chars[1] = 0;
+        chars[2] = 0;
+        chars[3] = 0;
+    }
 
-	bool operator==(const utf8char & other) const noexcept {
-		return (chars[0] == other.chars[0]) && (chars[1] == other.chars[1]) &&
-			   (chars[2] == other.chars[2]) && (chars[3] == other.chars[3]);
-	}
+    utf8char(char c) noexcept {
+        chars[0] = c;
+        chars[1] = 0;
+        chars[2] = 0;
+        chars[3] = 0;
+    }
 
-	int length() const noexcept {
-		if((chars[0] & 0b1111'0000) == 0b1111'0000) {
-			return 4;
-		} else if((chars[0] & 0b1110'0000) == 0b1110'0000) {
-			return 3;
-		} else if((chars[0] & 0b1100'0000) == 0b1100'0000) {
-			return 2;
-		} else {
-			return 1;
-		}
-	}
+    bool empty() const noexcept {
+        return (chars[0] == 0) && (chars[1] == 0) && (chars[2] == 0) &&
+               (chars[3] == 0);
+    }
+
+    bool operator==(const utf8char & other) const noexcept {
+        return (chars[0] == other.chars[0]) && (chars[1] == other.chars[1]) &&
+               (chars[2] == other.chars[2]) && (chars[3] == other.chars[3]);
+    }
+
+    int length() const noexcept {
+        if((chars[0] & 0b1111'0000) == 0b1111'0000) {
+            return 4;
+        } else if((chars[0] & 0b1110'0000) == 0b1110'0000) {
+            return 3;
+        } else if((chars[0] & 0b1100'0000) == 0b1100'0000) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
 };
 
 struct utf8string {
 public:
-	utf8string() noexcept {}
-	utf8string(const char * string) noexcept {
-		while(*string) {
-			utf8char c;
+    utf8string() noexcept {}
+    utf8string(const char * string) noexcept {
+        while(*string) {
+            utf8char c;
 
-			c.chars[0] = string[0];
-			string++;
+            c.chars[0] = string[0];
+            string++;
 
-			for(int i = 1; i < c.length(); i++) {
-				c.chars[i] = string[0];
-				string++;
-			}
+            for(int i = 1; i < c.length(); i++) {
+                c.chars[i] = string[0];
+                string++;
+            }
 
-			this->string.push_back(c);
-		}
-	}
+            this->string.push_back(c);
+        }
+    }
 
-	int length() const noexcept { return string.size(); }
+    auto begin() { return string.begin(); }
 
-	int raw_length() const noexcept { return string.size() * 4; }
+    auto end() { return string.end(); }
 
-	char * raw_data() noexcept {
-		if(string.size() > 0) { return &string[0].chars[0]; }
+    auto begin() const { return string.begin(); }
 
-		return nullptr;
-	}
+    auto end() const { return string.end(); }
 
-	void add(utf8char c) noexcept { string.push_back(c); }
+    utf8string operator+(const utf8string other) const noexcept {
+        utf8string n(*this);
+        n.string.insert(n.end(), other.begin(), other.end());
 
-	void insert(const int index, const utf8char c) noexcept {
-		if(index >= (int)string.size()) {
-			add(c);
-		} else {
-			string.insert(string.begin() + index, c);
-		}
-	}
+        return n;
+    }
 
-	void erase(const int index) noexcept { string.erase(string.begin() + index); }
+    utf8char & operator[](const int index) noexcept { return string[index]; }
 
-	std::string unpack() const noexcept {
-		std::string s;
+    const utf8char & operator[](const int index) const noexcept {
+        return string[index];
+    }
 
-		for(const auto & c : string) {
-			for(int i = 0; i < 4; i++) {
-				if(c.chars[i]) { s.push_back(c.chars[i]); }
-			}
-		}
+    int length() const noexcept { return string.size(); }
 
-		return s;
-	}
+    int raw_length() const noexcept { return string.size() * 4; }
 
-	auto begin() { return string.begin(); }
+    char * raw_data() noexcept {
+        if(string.size() > 0) { return &string[0].chars[0]; }
 
-	auto end() { return string.end(); }
+        return nullptr;
+    }
 
-	// NOTE(robin): find faster implementation?
-	bool begins_with(utf8string s) const noexcept {
-		return std::search(string.begin(), string.end(), s.begin(), s.end()) ==
-			   string.begin();
-	}
+    void add(utf8char c) noexcept { string.push_back(c); }
 
-	bool contains(utf8string s) const noexcept {
-		return std::search(string.begin(), string.end(), s.begin(), s.end()) !=
-			   string.end();
-	}
+    void insert(const int index, const utf8char c) noexcept {
+        if(index >= (int)string.size()) {
+            add(c);
+        } else {
+            string.insert(string.begin() + index, c);
+        }
+    }
 
-	void clear() noexcept { string.clear(); }
+    void erase(const int index) noexcept {
+        string.erase(string.begin() + index);
+    }
+
+    std::string unpack() const noexcept {
+        std::string s;
+
+        for(const auto & c : string) {
+            for(int i = 0; i < 4; i++) {
+                if(c.chars[i]) { s.push_back(c.chars[i]); }
+            }
+        }
+
+        return s;
+    }
+
+    auto delta_update(const utf8string other) const noexcept {
+        utf8string delta;
+        int        common_length = std::min(other.length(), length());
+
+        for(int i = 0; i < common_length; i++) {
+            if((*this)[i] == other[i]) {
+                delta.add(utf8char());
+                /* delta[i].chars[0] = 'x'; */
+            } else {
+                delta.add(other[i]);
+            }
+        }
+
+        if(other.length() > length()) {
+            for(int i = length(); i < other.length(); i++) {
+                delta.add(other[i]);
+            }
+        } else {
+            for(int i = other.length(); i < length(); i++) {
+                delta.add(utf8char(' '));
+            }
+        }
+
+        return delta;
+    }
+
+    // NOTE(robin): find faster implementation?
+    bool begins_with(utf8string s) const noexcept {
+        return std::search(string.begin(), string.end(), s.begin(), s.end()) ==
+               string.begin();
+    }
+
+    bool contains(utf8string s) const noexcept {
+        return std::search(string.begin(), string.end(), s.begin(), s.end()) !=
+               string.end();
+    }
+
+    void clear() noexcept { string.clear(); }
 
 private:
-	std::vector<utf8char> string;
+    std::vector<utf8char> string;
 };
 
 #endif

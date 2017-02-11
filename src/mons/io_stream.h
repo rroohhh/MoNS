@@ -91,6 +91,10 @@ public:
 	io_stream(Args &&... args) noexcept
 		: io_impl(std::forward<Args>(args)...) {}
 
+	int write(const std::pair<std::unique_ptr<char []>, int> string) {
+		return io_impl.write(string.first.get(), string.second);
+	}
+
 	int write(const short * buffer, const int size) const noexcept {
 		return convert_and_write(buffer, size);
 	}

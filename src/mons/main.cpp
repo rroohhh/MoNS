@@ -23,7 +23,6 @@ int main(int argc, char ** argv) {
 	io::log::log_outputs.erase("stdout");
 	io::log::log_outputs["logfile"] = logfile;
 	 
-
 	std::thread ssh_thread([&]() {
 		sshd listener("0.0.0.0", 8000);
 		while(true) {
@@ -31,8 +30,8 @@ int main(int argc, char ** argv) {
 			repl<sshio>(io, CommandHandler());
 		}
 	});
-	 
-	repl<stdio> r({}, CommandHandler());
+
+	/* repl<stdio> r({}, CommandHandler()); */
 	// parse the commandline options
 	CommandLineOptions ops = CommandLineOptions(argc, argv);
 
