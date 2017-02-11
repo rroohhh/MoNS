@@ -48,6 +48,8 @@ int GLPlot::m_createWindow() {
     log::debug("STENCIL BITS: {}", settings.stencilBits);
     log::debug("ANTIALIASING LEVEL: {}", settings.antialiasingLevel);
 
+	window->setVerticalSyncEnabled(true);
+
     glGenBuffers(1, &m_points.vbo);
     glGenBuffers(1, &m_axis.vbo);
     glGenBuffers(1, &m_axisLabels.vbo);
