@@ -223,8 +223,10 @@ struct readline {
                     searching_off();
                 } else {
                     complete();
+                    previous_written = "";
                     continue;
                 }
+                previous_written = "";
             } break;
             case ascii::DEL:
                 if(state == searching) {
@@ -256,7 +258,7 @@ struct readline {
 
                 searching_off();
                 io.write(crlf, 2);
-				previous_written = "";
+                previous_written = "";
 
                 return ret;
                 break;
@@ -313,16 +315,15 @@ struct readline {
 
         io.write(csi_sequence::goto_x(i));
 
-		for(int j = i; j < to_write.length(); j++) {
-			if(!(to_write[j].empty()))
-				io.write(to_write[j].chars, 4);
-			else {
-				io.write((short *)&csi_sequence::arrow_right, 1);
-			}
-		}
+        for(int j = i; j < to_write.length(); j++) {
+            if(!(to_write[j].empty()))
+                io.write(to_write[j].chars, 4);
+            else {
+                io.write((short *)&csi_sequence::arrow_right, 1);
+            }
+        }
 
         previous_written = prompt + current_read;
-
 
         if(state == searching) {
             io.write((short *)&csi_sequence::arrow_down, 1);
@@ -338,16 +339,15 @@ struct readline {
             io.write((short *)&csi_sequence::arrow_up, 1);
         }
 
-
-		io.write(csi_sequence::goto_x(cursor_pos + (int)prompt.length()));
+        io.write(csi_sequence::goto_x(cursor_pos + (int)prompt.length()));
         /*
-		 * io.write(csi_sequence::beginning_of_line,
+                 * io.write(csi_sequence::beginning_of_line,
          *          sizeof(csi_sequence::beginning_of_line));
-		 *
+                 *
          * for(int i = 0; i < cursor_pos + (int)prompt.length(); i++) {
          *     io.write((short *)&csi_sequence::arrow_right, 1);
          * }
-		 */
+                 */
     }
 
     void history_add(const utf8string s) noexcept { h.add(s); }

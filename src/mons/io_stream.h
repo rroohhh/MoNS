@@ -10,6 +10,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <string>
 
 struct stdio {
 	stdio(const int in = 0, const int out = 1) noexcept : in(in), out(out) {
@@ -101,6 +102,10 @@ public:
 
 	int write(const char * buffer, const int size) const noexcept {
 		return io_impl.write(buffer, size);
+	}
+
+	int write(std::string s) const noexcept {
+		return io_impl.write(s.c_str(), s.size());
 	}
 
 	int read(char * buffer, const int size) const noexcept {

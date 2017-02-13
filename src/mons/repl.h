@@ -14,33 +14,38 @@
 #include <cstdio>
 #include <thread>
 
-template <typename T>
+template <typename T, typename G>
 class repl {
 public:
-	repl(T io, CommandHandler handler) noexcept {
-		auto t = new std::thread([=]() {
-			int         length;
-			readline<T> rl(1024, io);
-			auto        prompt = "λ ";
-//			rl.add_completer(handler.completer());
+    repl(T io, CommandHandler<G> handler) noexcept {
+        auto t = new std::thread([=]() {
+            int         length;
+            readline<T> rl(1024, io);
+            auto        prompt = "λ ";
+            rl.add_completer(handler.completer());
 
-			io::log::debug("repl: init done");
+            io::log::debug("repl: new user connected");
 
-			auto line = rl.getline(prompt);
+            auto line = rl.getline(prompt);
 
-			while(line) {
-				auto l = line->unpack();
-				if(!whitespace_only(l)) {
-					io::log::debug("repl: got line: {}", l);
-					rl.history_add(*line);
-				}
+            while(line) {
+                auto l = line->unpack();
+                if(!whitespace_only(l)) {
+                    auto result = handler.run(*line);
 
-				line = rl.getline(prompt);
-			}
+                    if(!whitespace_only(result.output)) {
+                        io_stream<T>(io).write(result.output + "\n");
+                    }
 
-			rl.finish();
-		});
-	}
+                    rl.history_add(*line);
+                }
+
+                line = rl.getline(prompt);
+            }
+
+            rl.finish();
+        });
+    }
 
 private:
 };

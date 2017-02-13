@@ -74,9 +74,11 @@ public:
             }
         } catch(const cpptoml::parse_exception & e) {
             log::err("Failed to parse config file: {}", e.what());
+			std::exit(EXIT_FAILURE);
         } catch(std::ifstream::failure & failure) {
             log::err("Error during reading data files occured: {}",
                      failure.what());
+			std::exit(EXIT_FAILURE);
         }
 
         log::debug("Data read: ");

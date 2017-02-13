@@ -13,7 +13,7 @@ SET (APPLICATION_VENDOR_NAME "Robin Heinemann")
 SET (APPLICATION_VENDOR_URL "none (yet)")
 SET (APPLICATION_VENDOR_EMAIL "robin.ole.heinemann@t-online.de")
 SET (APPLICATION_ID "${APPLICATION_VENDOR_ID}.${PROJECT_NAME}")
-SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function")
+SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -ggdb")
 
 SET (CMAKE_VERBOSE_MAKEFILE 0)
 SET (BUILD_SHARED_LIBS true)
