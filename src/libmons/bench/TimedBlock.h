@@ -8,6 +8,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "../io/log.h"
 #include "../platform/Platform.h"
@@ -26,7 +27,7 @@ class TimedBlock {
     };
 
 public:
-    TimedBlock(std::string name) noexcept : start(Platform::rdtsc()), name(name) {}
+    TimedBlock(std::string name) noexcept : start(Platform::rdtsc()), name(std::move(name)) {}
 
     void end() noexcept {
         if(!ended) {

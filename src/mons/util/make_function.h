@@ -13,21 +13,21 @@ struct function_traits : public function_traits<decltype(&T::operator())> {};
 template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType (ClassType::*)(Args...) const> {
     enum { arity = sizeof...(Args) };
-    typedef std::function<ReturnType(Args...)> f_type;
+    using f_type = std::function<ReturnType (Args...)>;
 };
 
 // for pointers to member function
 template <typename ClassType, typename ReturnType, typename... Args>
 struct function_traits<ReturnType (ClassType::*)(Args...)> {
     enum { arity = sizeof...(Args) };
-    typedef std::function<ReturnType(Args...)> f_type;
+    using f_type = std::function<ReturnType (Args...)>;
 };
 
 // for function pointers
 template <typename ReturnType, typename... Args>
 struct function_traits<ReturnType (*)(Args...)> {
     enum { arity = sizeof...(Args) };
-    typedef std::function<ReturnType(Args...)> f_type;
+    using f_type = std::function<ReturnType (Args...)>;
 };
 
 template <typename L>

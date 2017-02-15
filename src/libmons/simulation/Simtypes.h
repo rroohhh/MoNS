@@ -4,10 +4,12 @@
 // basic type for the simulation
 
 namespace Simtypes {
-    typedef unsigned long int SIZE;
-    typedef long int          INT;
-    typedef double            FLOAT;
-    typedef struct { FLOAT pos[3]; } v3;
+    using SIZE = unsigned long;
+    using INT = long;
+    using FLOAT = double;
+    struct v3 {
+        FLOAT pos[3];
+    };
 }
 
 #endif

@@ -9,6 +9,7 @@
 
 #include <experimental/optional>
 #include <functional>
+#include <utility>
 
 #include "ascii.h"
 #include "csi_sequence.h"
@@ -28,7 +29,7 @@ struct history {
 
     int find_first(utf8string s) {
         for(int i = hist.size() - 1; i >= 0; i--) {
-            if(hist[i % size_].contains(s)) {
+            if(hist[i % size_].contains(std::move(s))) {
                 return -(i % size_ - hist.size());
             }
         }
@@ -55,7 +56,8 @@ complete_from_canidates(std::vector<utf8string> possible_canidates) {
         std::vector<utf8string> canidates;
 
         for(const auto & c : possible_canidates) {
-            if(c.begins_with(current)) canidates.push_back(c);
+            if(c.begins_with(current)) { canidates.push_back(c);
+}
         }
 
         return canidates;
@@ -112,7 +114,7 @@ struct readline {
             cursor_pos   = current_read.length();
             update_line();
             return;
-        } else if(completions.size() == 0) {
+        } if(completions.empty()) {
             return;
         }
 
@@ -121,8 +123,9 @@ struct readline {
         int width     = io.width();
         int max_width = 0;
 
-        for(const auto s : completions) {
-            if(max_width < s.length()) max_width = s.length();
+        for(const auto& s : completions) {
+            if(max_width < s.length()) { max_width = s.length();
+}
         }
 
         // NOTE(robin): spacing behind the item
@@ -161,7 +164,7 @@ struct readline {
 
             io.read(buffer, 1);
 
-            if((buffer[0] == ascii::ETX) | (buffer[0] == ascii::EOT)) {
+            if(static_cast<int>((buffer[0] == ascii::ETX) | static_cast<int>(buffer[0] == ascii::EOT)) != 0) {
                 if(state != searching) {
                     break;
                 } else {
@@ -310,15 +313,16 @@ struct readline {
         int i = 0;
 
         for(i = 0; i < to_write.length(); i++) {
-            if(!to_write[i].empty()) break;
+            if(!to_write[i].empty()) { break;
+}
         }
 
         io.write(csi_sequence::goto_x(i));
 
         for(int j = i; j < to_write.length(); j++) {
-            if(!(to_write[j].empty()))
+            if(!(to_write[j].empty())) {
                 io.write(to_write[j].chars, 4);
-            else {
+            } else {
                 io.write((short *)&csi_sequence::arrow_right, 1);
             }
         }
@@ -350,7 +354,7 @@ struct readline {
                  */
     }
 
-    void history_add(const utf8string s) noexcept { h.add(s); }
+    void history_add(const utf8string& s) noexcept { h.add(s); }
 
     void add_completer(completion_function f) { completer.push_back(f); }
 
@@ -361,10 +365,10 @@ private:
 
     readline_state state;
 
-    int cursor_pos;
-    int hist_index;
-    int old_cursor_pos;
-    int before_search_pos;
+    int cursor_pos{};
+    int hist_index{};
+    int old_cursor_pos{};
+    int before_search_pos{};
 
     utf8string old_read;
     utf8string current_read;

@@ -9,7 +9,7 @@
 class CommandLineOptions {
 public:
     CommandLineOptions(int argc, char ** argv) noexcept {
-        argp_parse(&argp, argc, argv, 0, 0, &args);
+        argp_parse(&argp, argc, argv, 0, nullptr, &args);
     }
 
     std::string configFile() noexcept { return args.input_file; }
@@ -25,7 +25,7 @@ private:
 
     // supported options
     struct argp_option options[2] = {
-        {"gui", 'g', 0, 0, "Produce graphical output", {}}, {}};
+        {"gui", 'g', nullptr, 0, "Produce graphical output", {}}, {}};
 
     // struct for holding the argument info
     struct arguments {

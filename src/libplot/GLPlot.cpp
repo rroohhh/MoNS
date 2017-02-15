@@ -3,7 +3,7 @@
 #include "GLPlot.h"
 
 GLPlot::GLPlot() {
-    std::thread * thread = new std::thread([=]() { m_createWindow(); });
+    std::thread([=]() { m_createWindow(); }).detach();
 }
 
 GLPlot::~GLPlot() { glFinish(); }
@@ -22,7 +22,7 @@ int GLPlot::m_createWindow() {
         APPLICATION_NAME, sf::Style::Default,
         sf::ContextSettings{24, 8, 0, 4, 3, sf::ContextSettings::Core});
 
-    glewExperimental    = true;
+    glewExperimental    = 1u;
     unsigned int status = glewInit();
 
     if(status != GLEW_OK) {
@@ -70,7 +70,7 @@ int GLPlot::m_createWindow() {
         "#version 150\nout vec4 frag_colour;\nvoid main () {\n    frag_colour "
         "= vec4(0.0, 0.0, 0.0, 1.0);\n}");
 
-    m_shaderProgram->vertexAttribPointer("vp", 2, GL_FLOAT, false, 8, 0);
+    m_shaderProgram->vertexAttribPointer("vp", 2, GL_FLOAT, false, 8, nullptr);
 
     // Hurts performance really hard:
     glDisable(GL_POINT_SMOOTH);
@@ -92,7 +92,7 @@ int GLPlot::m_createWindow() {
 }
 
 int GLPlot::m_renderLoop(sf::RenderWindow * window) {
-    sf::Event event;
+    sf::Event event{};
     bool      mouseDown = false, lines = false, scaleX = false, scaleY = false,
          axisNeedUpdate = true;
     int mouseX = 0, mouseY = 0, mouseDX = 0, mouseDY = 0,
@@ -116,7 +116,7 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
                  GL_STREAM_DRAW);
 
     glBindVertexArray(m_axis.vao);
-    m_shaderProgram->vertexAttribPointer("vp", 2, GL_FLOAT, false, 8, 0);
+    m_shaderProgram->vertexAttribPointer("vp", 2, GL_FLOAT, false, 8, nullptr);
 
     while(window->isOpen()) {
         while(window->pollEvent(event)) {
@@ -134,8 +134,9 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
 
                     mouseX = sf::Mouse::getPosition().x;
                     mouseY = sf::Mouse::getPosition().y;
-                } else if(event.mouseButton.button == sf::Mouse::Right)
+                } else if(event.mouseButton.button == sf::Mouse::Right) {
                     lines = !lines;
+}
             } else if(event.type == sf::Event::MouseButtonReleased) {
                 if(event.mouseButton.button == sf::Mouse::Left) {
                     mouseDown     = false;
@@ -145,13 +146,13 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
                     mouseDYScreen = 0.0;
                 }
             } else if(event.type == sf::Event::MouseWheelScrolled) {
-                if(scaleX && !scaleY)
+                if(scaleX && !scaleY) {
                     scale[0] *=
                         (event.mouseWheelScroll.delta > 0 ? 0.9 : 1.11111111);
-                else if(scaleY && !scaleX)
+                } else if(scaleY && !scaleX) {
                     scale[1] *=
                         (event.mouseWheelScroll.delta > 0 ? 0.9 : 1.11111111);
-                else {
+                } else {
                     scale[0] *=
                         (event.mouseWheelScroll.delta > 0 ? 0.9 : 1.11111111);
                     scale[1] *=
@@ -160,15 +161,17 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
 
                 axisNeedUpdate = true;
             } else if(event.type == sf::Event::KeyPressed) {
-                if(event.key.code == sf::Keyboard::LShift)
+                if(event.key.code == sf::Keyboard::LShift) {
                     scaleX = true;
-                else if(event.key.code == sf::Keyboard::LControl)
+                } else if(event.key.code == sf::Keyboard::LControl) {
                     scaleY = true;
+}
             } else if(event.type == sf::Event::KeyReleased) {
-                if(event.key.code == sf::Keyboard::LShift)
+                if(event.key.code == sf::Keyboard::LShift) {
                     scaleX = false;
-                else if(event.key.code == sf::Keyboard::LControl)
+                } else if(event.key.code == sf::Keyboard::LControl) {
                     scaleY = false;
+}
             }
         }
 
@@ -218,8 +221,9 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
         if(lines) {
             glDrawArrays(GL_LINE_STRIP, 0, m_count);
             glDrawArrays(GL_POINTS, 0, m_count);
-        } else
+        } else {
             glDrawArrays(GL_POINTS, 0, m_count);
+}
 
         glBindBuffer(GL_ARRAY_BUFFER, m_axis.vbo);
         m_shaderProgram->useProgram();
@@ -243,7 +247,7 @@ int GLPlot::m_renderLoop(sf::RenderWindow * window) {
 int GLPlot::m_generateAxisData(int screenWidth, int screenHeight, float centerX,
                                float centerY, float scaleX, float scaleY) {
     centerX = -centerX;
-    centerY = centerY;
+//    centerY = centerY;
 
     float xlow  = -1.0 * scaleX + centerX;
     float xhigh = 1.0 * scaleX + centerX;
@@ -305,7 +309,8 @@ int GLPlot::m_generateAxisData(int screenWidth, int screenHeight, float centerX,
         m_numberRenderer->addText(0, 0.5 * (tmp + 1.0) * screenHeight, 30, buf);
     }
 
-    while(i < 256) m_axisData[i++] = 0;
+    while(i < 256) { m_axisData[i++] = 0;
+}
 
     return 0;
 }

@@ -10,7 +10,7 @@
 
 namespace detail {
     template <typename F, typename... Args, size_t... S>
-    auto apply_to_fun(F fun, std::tuple<Args...> t, std::index_sequence<S...>) {
+    auto apply_to_fun(F fun, std::tuple<Args...> t, std::index_sequence<S...> /*unused*/) {
 		// TODO(robin): file a gcc bug about t not being used, although it is used
 		(void)t;
         return fun(std::get<S>(t)...);

@@ -21,7 +21,7 @@ int ShaderProgram::vertexAttribPointer(const char * name, int count, int type,
 
     int attrib = glGetAttribLocation(m_id, name);
 
-    glVertexAttribPointer(attrib, count, type, normalized, stride, offset);
+    glVertexAttribPointer(attrib, count, type, static_cast<GLboolean>(normalized), stride, offset);
     glEnableVertexAttribArray(attrib);
 
     return 0;

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "util/apply_to_fun.h"
@@ -25,15 +26,15 @@ struct CommandResult {
 
     CommandResult() : output(), return_code() {}
     CommandResult(int i) : output(), return_code(i) {}
-    CommandResult(std::string s) : output(s), return_code() {}
-    CommandResult(std::string s, int i) : output(s), return_code(i) {}
+    CommandResult(std::string s) : output(std::move(s)), return_code() {}
+    CommandResult(std::string s, int i) : output(std::move(s)), return_code(i) {}
     CommandResult(std::pair<std::string, int> p)
         : output(p.first), return_code(p.second) {}
 };
 
 template <typename T>
 struct parse_string {
-    T operator()(string value) {
+    T operator()(const string& value) {
         stringstream ss(value);
         T            ret;
         ss >> ret;
@@ -68,7 +69,7 @@ std::function<CommandResult(std::vector<std::string>)> make_command(T t) {
     return detail::make_command(make_function(t));
 }
 
-typedef std::function<CommandResult(std::vector<std::string>)> Command;
+using Command = std::function<CommandResult (std::vector<std::string>)>;
 
 /*
  * struct Command {

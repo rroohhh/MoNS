@@ -31,7 +31,7 @@ struct Simulation {
         : Simulation(new SimulationConfig(filename)) {}
 
     inline int addStepListener(
-        std::function<void(Simtypes::FLOAT, Simtypes::SIZE, Simtypes::v3 *)>
+        const std::function<void(Simtypes::FLOAT, Simtypes::SIZE, Simtypes::v3 *)>&
             listener) noexcept {
         TIMED_BLOCK(add_step_listener);
         m_stepListener->push_back(listener);
@@ -40,7 +40,7 @@ struct Simulation {
     }
 
     inline int addFinishListener(
-        std::function<void(Simtypes::SIZE, Simtypes::v3 *)> listener) noexcept {
+        const std::function<void(Simtypes::SIZE, Simtypes::v3 *)>& listener) noexcept {
         TIMED_BLOCK(add_finish_listener);
         m_finishListener->push_back(listener);
 
@@ -82,13 +82,13 @@ struct Simulation {
                     END_BLOCK(integrator);
                 } while(reachedTime < targetTime);
 
-                for(auto listener : *m_stepListener) {
+                for(const auto& listener : *m_stepListener) {
                     TIMED_BLOCK(simulation_step_listener);
                     listener(targetTime, m_data->bodycount, m_data->positions);
                 }
             }
 
-            for(auto listener : *m_finishListener) {
+            for(const auto& listener : *m_finishListener) {
                 TIMED_BLOCK(simulation_finish_listener);
                 listener(m_data->bodycount, m_data->positions);
             }
@@ -121,7 +121,7 @@ private:
         act.sa_handler = signal_handler;
         sigemptyset(&act.sa_mask);
         act.sa_flags = 0;
-        sigaction(SIGINT, &act, 0);
+        sigaction(SIGINT, &act, nullptr);
     }
 
     SimulationData *   m_data;

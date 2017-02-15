@@ -37,12 +37,12 @@ public:
         return complete_from_canidates(possible_canidates);
     }
 
-    CommandResult run(utf8string s) const {
+    CommandResult run(const utf8string& s) const {
         auto cmd = split(s.unpack(), ' ');
         if(cmds.find(cmd[0]) == cmds.end()) {
             return std::make_pair(
                 std::string("Unknown command ") + cmd[0] + "!", -1);
-        } else {
+        } 
             std::vector<std::string> args;
             if(cmd.size() >= 2) {
                 args.insert(args.end(), cmd.begin() + 1, cmd.end());
@@ -53,7 +53,7 @@ public:
             } catch(std::string e) {
 				auto strs = split(e, '\n');
 				return std::make_pair(strs[0] + "\r\n" + cmd[0] + "(" + strs[1] + ")", -1); }
-        }
+        
     }
 
 private:

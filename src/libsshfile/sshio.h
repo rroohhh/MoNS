@@ -53,7 +53,7 @@ struct sshio {
 	int get_height() const noexcept { return dims[1]; }
 
 private:
-	static int message_callback(ssh_session session, ssh_message msg,
+	static int message_callback(ssh_session  /*session*/, ssh_message msg,
 								void * data) {
 		int * dims = (int *)data;
 		if((ssh_message_subtype(msg) == SSH_CHANNEL_REQUEST_PTY) ||

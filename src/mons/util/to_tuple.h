@@ -16,12 +16,12 @@ namespace detail {
     template <template <typename> class F, typename... Args, typename T,
               size_t... S>
     std::tuple<Args...> to_tuple(const std::vector<T> & v,
-                                 std::index_sequence<S...>) {
+                                 std::index_sequence<S...> /*unused*/) {
         return std::make_tuple((F<Args>()(v[S]))...);
     }
 
     template <typename... Args, size_t... S>
-    std::string string_arg_pack(std::index_sequence<S...>) {
+    std::string string_arg_pack(std::index_sequence<S...> /*unused*/) {
         using swallow = int[];
         std::stringstream ss;
         (void)swallow{0, (void(ss << (S == 0 ? "" : ", ")

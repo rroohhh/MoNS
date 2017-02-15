@@ -12,7 +12,7 @@ class CSVTable {
 public:
     CSVTable(const char * filename, char seperator = ',') noexcept;
 
-    static void write_file(std::string                           filename,
+    static void write_file(const std::string&                           filename,
                            std::vector<std::vector<std::string>> data,
                            char seperator = ',') noexcept;
     std::vector<std::vector<std::string>> getRows() noexcept;

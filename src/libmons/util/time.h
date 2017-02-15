@@ -13,7 +13,7 @@
 #include <sys/types.h>
 
 namespace systime {
-    inline std::time_t now() noexcept { return std::time(0); }
+    inline std::time_t now() noexcept { return std::time(nullptr); }
     inline std::string dateString() noexcept {
         auto        n = now();
         std::string tmp(std::ctime(&n));
