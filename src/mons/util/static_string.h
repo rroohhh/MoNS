@@ -17,7 +17,7 @@ private:
     const std::uint64_t s;
 
 public:
-    typedef const char * const_iterator;
+    using const_iterator = const char *;
 
     template <std::uint64_t n>
     constexpr StaticString(const char (&string)[n]) noexcept

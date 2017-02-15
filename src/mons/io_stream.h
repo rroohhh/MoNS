@@ -14,7 +14,7 @@
 
 struct stdio {
 	stdio(const int in = 0, const int out = 1) noexcept : in(in), out(out) {
-		termios settings;
+		termios settings{};
 		tcgetattr(in, &settings);
 		old_settings = settings;
 		settings.c_iflag |= IGNBRK;
@@ -29,7 +29,7 @@ struct stdio {
 	}
 
 	stdio(const stdio & other) : in(other.in), out(other.out), old_settings(other.old_settings) {
-		termios settings;
+		termios settings{};
 		tcgetattr(in, &settings);
 		settings.c_iflag |= IGNBRK;
 		settings.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
@@ -68,13 +68,13 @@ struct stdio {
 	}
 
 	int get_width() const noexcept {
-		struct winsize w;
+		struct winsize w{};
 		ioctl(in, TIOCGWINSZ, &w);
 		return w.ws_col;
 	}
 
 	int get_height() const noexcept {
-		struct winsize w;
+		struct winsize w{};
 		ioctl(in, TIOCGWINSZ, &w);
 		return w.ws_row;
 	}
@@ -82,7 +82,7 @@ struct stdio {
 	int in, out;
 
 private:
-	termios old_settings;
+	termios old_settings{};
 };
 
 template <typename T>
@@ -104,7 +104,7 @@ public:
 		return io_impl.write(buffer, size);
 	}
 
-	int write(std::string s) const noexcept {
+	int write(const std::string& s) const noexcept {
 		return io_impl.write(s.c_str(), s.size());
 	}
 
@@ -135,9 +135,9 @@ private:
 		return to_test == ascii::ESC;
 	}
 
-	void parse_args(const char * arg_buffer, const int size, int * arguments,
+	void parse_args(const char * arg_buffer, const int  /*size*/, int * arguments,
 					const short type) const noexcept {
-		if(!arg_buffer[0]) {
+		if(arg_buffer[0] == 0) {
 			switch(type) {
 			case csi_sequence::arrow_up:
 			case csi_sequence::arrow_down:
@@ -163,7 +163,7 @@ private:
 		char                  in_buffer[1]     = {0};
 		char                  arg_buffer[1024] = {0};
 		int                   read             = 0;
-		csi_sequence::esc_seq seq;
+		csi_sequence::esc_seq seq{};
 
 		io_impl.read(in_buffer, sizeof(in_buffer));
 
@@ -268,9 +268,9 @@ private:
 			} else {
 				if((ret = io_impl.write((char *)&buffer[i], 1)) != 1) {
 					return ret;
-				} else {
+				} 
 					written += ret;
-				}
+				
 			}
 		}
 

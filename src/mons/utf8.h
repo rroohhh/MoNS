@@ -41,7 +41,7 @@ struct utf8char {
     int length() const noexcept {
         if((chars[0] & 0b1111'0000) == 0b1111'0000) {
             return 4;
-        } else if((chars[0] & 0b1110'0000) == 0b1110'0000) {
+        } if((chars[0] & 0b1110'0000) == 0b1110'0000) {
             return 3;
         } else if((chars[0] & 0b1100'0000) == 0b1100'0000) {
             return 2;
@@ -55,7 +55,7 @@ struct utf8string {
 public:
     utf8string() noexcept {}
     utf8string(const char * string) noexcept {
-        while(*string) {
+        while(*string != 0) {
             utf8char c;
 
             c.chars[0] = string[0];
@@ -78,7 +78,7 @@ public:
 
     auto end() const { return string.end(); }
 
-    utf8string operator+(const utf8string other) const noexcept {
+    utf8string operator+(const utf8string& other) const noexcept {
         utf8string n(*this);
         n.string.insert(n.end(), other.begin(), other.end());
 
@@ -96,7 +96,7 @@ public:
     int raw_length() const noexcept { return string.size() * 4; }
 
     char * raw_data() noexcept {
-        if(string.size() > 0) { return &string[0].chars[0]; }
+        if(!string.empty()) { return &string[0].chars[0]; }
 
         return nullptr;
     }
@@ -119,15 +119,15 @@ public:
         std::string s;
 
         for(const auto & c : string) {
-            for(int i = 0; i < 4; i++) {
-                if(c.chars[i]) { s.push_back(c.chars[i]); }
+            for(char i : c.chars) {
+                if(i != 0) { s.push_back(i); }
             }
         }
 
         return s;
     }
 
-    auto delta_update(const utf8string other) const noexcept {
+    auto delta_update(const utf8string& other) const noexcept {
         utf8string delta;
         int        common_length = std::min(other.length(), length());
 

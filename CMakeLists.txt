@@ -13,10 +13,11 @@ SET (APPLICATION_VENDOR_NAME "Robin Heinemann")
 SET (APPLICATION_VENDOR_URL "none (yet)")
 SET (APPLICATION_VENDOR_EMAIL "robin.ole.heinemann@t-online.de")
 SET (APPLICATION_ID "${APPLICATION_VENDOR_ID}.${PROJECT_NAME}")
-SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -ggdb")
+SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas")
 
 SET (CMAKE_VERBOSE_MAKEFILE 0)
 SET (BUILD_SHARED_LIBS true)
+set (CMAKE_CXX_STANDARD 14)
 
 SET (MAINFOLDER ${PROJECT_SOURCE_DIR})
 SET (EXECUTABLE_OUTPUT_PATH "${MAINFOLDER}/bin")

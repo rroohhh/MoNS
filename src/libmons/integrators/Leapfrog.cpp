@@ -40,7 +40,7 @@ inline void Leapfrog::init(Simtypes::v3 * velocities) noexcept {
 // now use actual leapfrog method
 Simtypes::FLOAT Leapfrog::step(Simtypes::FLOAT simTime) noexcept {
     Simtypes::FLOAT dt2;
-	Simtypes::v3    tmp_position;
+	Simtypes::v3    tmp_position{};
 
     for(Simtypes::SIZE i = 0; i < *bodycount; i++) {
         dt2 = dt[i] * dt[i];

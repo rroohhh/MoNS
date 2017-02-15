@@ -20,13 +20,13 @@ CSVTable::CSVTable(const char * filename, char seperator) noexcept
     file.close();
 }
 
-void CSVTable::write_file(std::string                           filename,
+void CSVTable::write_file(const std::string&                           filename,
                           std::vector<std::vector<std::string>> data,
                           char seperator) noexcept {
     std::ofstream file(filename);
 
     for(const auto & line : data) {
-        if(line.size() > 0) {
+        if(!line.empty()) {
             unsigned int i = 0;
             for(i = 0; i < line.size() - 1; i++) {
                 fmt::print(file, "{}{}", line[i], seperator);

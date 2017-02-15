@@ -49,13 +49,13 @@ NumberRenderer::NumberRenderer(int screenWidth, int screenHeight) {
         "}");
 
     m_shaderProgram->vertexAttribPointer("vp", 2, GL_FLOAT, false,
-                                         4 * sizeof(float), 0);
+                                         4 * sizeof(float), nullptr);
     m_shaderProgram->vertexAttribPointer("TexCoord", 2, GL_FLOAT, false,
                                          4 * sizeof(float),
                                          (void *)(2 * sizeof(float)));
 }
 
-NumberRenderer::~NumberRenderer() {}
+NumberRenderer::~NumberRenderer() = default;
 
 int NumberRenderer::setScreenDimension(int screenWidth, int screenHeight) {
     m_width  = screenWidth;
@@ -154,7 +154,7 @@ int NumberRenderer::addText(int x, int y, int height, const char * text) {
     float screen_width  = (float)(ratio * (float)Glyphs::width) / m_width;
     float cur_x         = m_toCoords(x, m_width);
     float cur_y         = m_toCoords(y, m_height);
-    glyph cur_glyph;
+    glyph cur_glyph{};
     cur_glyph.height = screen_height;
     cur_glyph.y      = cur_y;
     cur_glyph.width  = screen_width;
@@ -235,7 +235,7 @@ int NumberRenderer::m_loadTexture(const char * data, int target) {
     char * buf =
         (char *)malloc(16 * Glyphs::width * Glyphs::height * sizeof(char));
 
-    if(data == NULL) {
+    if(data == nullptr) {
         log::debug("Fail: {}", target);
         return 1;
     }

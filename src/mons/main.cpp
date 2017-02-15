@@ -19,7 +19,7 @@ using Sim = Simulation<Gravity, Leapfrog>;
 int main(int argc, char ** argv) {
 
     TIMED_BLOCK(setup);
-    FILE * logfile = fopen("mons.log", "aw");
+    /* FILE * logfile = fopen("mons.log", "aw"); */
 
     // redirect log output to file
     /* io::log::log_outputs.erase("stdout"); */
@@ -43,7 +43,7 @@ int main(int argc, char ** argv) {
     // plotting handler
     if(ops.gui()) {
         // only open gui if wanted
-        GLPlot * plot = new GLPlot();
+        auto * plot = new GLPlot();
 
         //  buffer for plotting
         float * buffer = nullptr;

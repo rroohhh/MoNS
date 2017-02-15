@@ -11,6 +11,7 @@
 #include "SimulationSettings.h"
 #include <cassert>
 #include <string>
+#include <utility>
 
 using namespace io;
 
@@ -29,7 +30,7 @@ public:
                                               positions, velocities}) {}
 
     // read a config from file
-    inline SimulationConfig(std::string filename) noexcept {
+    inline SimulationConfig(std::string filename) noexcept : SimulationSettings() {
         try {
             table = cpptoml::parse_file(filename);
 
@@ -103,7 +104,7 @@ public:
     //                   "or four arguments (split data file)");
     // }
 
-    inline void write_to_file(std::string configfile,
+    inline void write_to_file(const std::string& configfile,
                               std::string single_data_file) noexcept {
         auto data = cpptoml::make_table();
         data->insert("file", single_data_file);
@@ -131,7 +132,7 @@ public:
 		CSVTable::write_file(single_data_file, out_data);
     }
 
-    inline void write_to_file(std::string configfile, std::string masses_file,
+    inline void write_to_file(const std::string& configfile, std::string masses_file,
                               std::string positions_file,
                               std::string velocities_file) noexcept {
 
@@ -148,7 +149,7 @@ private:
     // the config table
     std::shared_ptr<cpptoml::table> table;
 
-    inline void save_table(std::string filename) {
+    inline void save_table(const std::string& filename) {
         std::ofstream config(filename);
         config << (*table);
         config.close();
@@ -169,7 +170,7 @@ private:
     inline void checkRows(std::vector<std::vector<std::string>> rows,
                           Simtypes::SIZE                        bodycount,
                           Simtypes::SIZE                        expectedColums,
-                          std::string dataName) noexcept {
+                          const std::string& dataName) noexcept {
         if(rows.size() < bodycount) {
             log::err("{} too short, only {} rows found, expected {}", dataName,
                      rows.size(), bodycount);
@@ -185,7 +186,7 @@ private:
     }
 
     // read the particle data from a single data file
-    inline void readSingle(std::string filename) noexcept {
+    inline void readSingle(const std::string& filename) noexcept {
         auto rows = CSVTable(filename.c_str()).getRows();
 
         checkRows(rows, bodycount, 7 /* mass, x, y, z, vx, vy, vz */, "Data");
@@ -204,9 +205,9 @@ private:
     }
 
     // read the particle data from split data files
-    inline void readSplit(std::string masses_filename,
-                          std::string positions_filename,
-                          std::string velocities_filename) noexcept {
+    inline void readSplit(const std::string& masses_filename,
+                          const std::string& positions_filename,
+                          const std::string& velocities_filename) noexcept {
         std::vector<std::vector<std::string>> rows;
         auto masses_rows     = CSVTable(masses_filename.c_str()).getRows();
         auto positions_rows  = CSVTable(positions_filename.c_str()).getRows();

@@ -70,7 +70,7 @@ namespace csi_sequence {
 
     inline std::pair<std::unique_ptr<char[]>, int> goto_x(int x) noexcept {
         if(x > 0) {
-            int len = snprintf(NULL, 0, "%c%c%c%d%c", ascii::CR, ascii::ESC,
+            int len = snprintf(nullptr, 0, "%c%c%c%d%c", ascii::CR, ascii::ESC,
                                ascii::SQUARE_BRACKET_OPEN, x, ascii::C) + 1;
             std::unique_ptr<char[]> str(new char[len]);
 
@@ -78,14 +78,14 @@ namespace csi_sequence {
                      ascii::SQUARE_BRACKET_OPEN, x, ascii::C);
 
             return std::make_pair(std::move(str), len);
-        } else {
-            int                     len = snprintf(NULL, 0, "\r") + 1;
+        } 
+            int                     len = snprintf(nullptr, 0, "\r") + 1;
             std::unique_ptr<char[]> str(new char[len]);
 
             snprintf(str.get(), len, "\r");
 
             return std::make_pair(std::move(str), len);
-        }
+        
     }
 
     inline short char_to_type(const char c) noexcept {

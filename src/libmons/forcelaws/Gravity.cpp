@@ -21,7 +21,7 @@ void Gravity::apply() noexcept {
 
 // ToDo(robin): build support for flexsteps -> simTime
 // ToDo(robin): SIMD
-void Gravity::apply(Simtypes::FLOAT simTime) noexcept {
+void Gravity::apply(Simtypes::FLOAT  /*simTime*/) noexcept {
     auto count = *bodycount;
 
     Simtypes::FLOAT dx, dy, dz, dist, p;

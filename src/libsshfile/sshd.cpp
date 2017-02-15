@@ -31,7 +31,7 @@ sshd::sshd(std::string addr, unsigned int port) noexcept {
 sshio sshd::accept() noexcept {
     ssh_session session;
     ssh_message message;
-	ssh_channel chan  = 0;
+	ssh_channel chan  = nullptr;
 	int         auth  = 0;
 	int         shell = 0;
 	int         r;
@@ -45,14 +45,14 @@ sshio sshd::accept() noexcept {
 		return {nullptr, nullptr};
 	}
 
-	if(ssh_handle_key_exchange(session)) {
+	if(ssh_handle_key_exchange(session) != 0) {
 		log::err("ssh_handle_key_exchange: {}\n", ssh_get_error(session));
 		return {nullptr, nullptr};
     }
 
     /* proceed to authentication */
 	auth = authenticate(session);
-	if(!auth) {
+	if(auth == 0) {
 		log::err("Authentication error: {}\n", ssh_get_error(session));
 		ssh_disconnect(session);
 		return {nullptr, nullptr};
@@ -61,7 +61,7 @@ sshio sshd::accept() noexcept {
     /* wait for a channel session */
     do {
         message = ssh_message_get(session);
-        if(message) {
+        if(message != nullptr) {
             if(ssh_message_type(message) == SSH_REQUEST_CHANNEL_OPEN &&
                (ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_SHELL ||
                 ssh_message_subtype(message) == SSH_CHANNEL_REQUEST_PTY)) {
@@ -74,7 +74,7 @@ sshio sshd::accept() noexcept {
                 ssh_message_free(message);
             }
         } else {
-            if(!chan) {
+            if(chan == nullptr) {
 				log::err("Error: client did not ask for a channel session "
 						 "({})\n",
 						 ssh_get_error(session));
@@ -82,7 +82,7 @@ sshio sshd::accept() noexcept {
 				return {nullptr, nullptr};
             }
 		}
-	} while(!chan);
+	} while(chan == nullptr);
 
 	do {
 		message = ssh_message_get(session);
@@ -100,7 +100,7 @@ sshio sshd::accept() noexcept {
 			ssh_message_reply_default(message);
 			ssh_message_free(message);
 		} else {
-			if(!shell) {
+			if(shell == 0) {
 				log::err("Error: No shell requested ({})\n",
 						 ssh_get_error(session));
 				return {nullptr, nullptr};
@@ -116,7 +116,8 @@ int sshd::authenticate(ssh_session session) noexcept {
 
     do {
         message = ssh_message_get(session);
-        if(!message) break;
+        if(message == nullptr) { break;
+}
         switch(ssh_message_type(message)) {
         case SSH_REQUEST_AUTH:
             switch(ssh_message_subtype(message)) {
@@ -139,6 +140,6 @@ int sshd::authenticate(ssh_session session) noexcept {
             ssh_message_reply_default(message);
         }
         ssh_message_free(message);
-    } while(1);
+    } while(true);
     return 0;
 }
