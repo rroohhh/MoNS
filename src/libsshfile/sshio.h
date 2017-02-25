@@ -3,10 +3,8 @@
   sshio.h -- ssh io wrapper
 */
 
-#ifndef _SSHIO_H
-#define _SSHIO_H
-
-#include <cstdio>
+#ifndef __SSHIO_H_
+#define __SSHIO_H_
 
 struct sshio {
 	sshio(ssh_session session, ssh_channel chan, int width = 100,

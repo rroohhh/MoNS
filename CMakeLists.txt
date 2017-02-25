@@ -13,10 +13,25 @@ SET (APPLICATION_VENDOR_NAME "Robin Heinemann")
 SET (APPLICATION_VENDOR_URL "none (yet)")
 SET (APPLICATION_VENDOR_EMAIL "robin.ole.heinemann@t-online.de")
 SET (APPLICATION_ID "${APPLICATION_VENDOR_ID}.${PROJECT_NAME}")
-SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas")
+#SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -ggdb -march=native -fno-math-errno -ffinite-math-only -ffast-math")
+SET (CXX_WARNINGS "-Wall -pedantic -Wextra -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -ggdb -march=native")
+
+IF (CMAKE_CXX_COMPILER MATCHES "icpc")
+	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-intel") 
+ENDIF()
+
+IF (CMAKE_C_COMPILER MATCHES "icc")
+	SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-intel") 
+ENDIF()
+
+#SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -flto -fgraphite-identity -floop-interchange -floop-strip-mine -floop-block -floop-parallelize-all -ftree-loop-distribution")
+#SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto -fwhole-program")
+#SET (CMAKE_AR "gcc-ar")
+#SET (CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> qcs <TARGET> <LINK_FLAGS> <OBJECTS>")
+#SET (CMAKE_CXX_ARCHIVE_FINISH true)
 
 SET (CMAKE_VERBOSE_MAKEFILE 0)
-SET (BUILD_SHARED_LIBS true)
+SET (BUILD_SHARED_LIBS false)
 set (CMAKE_CXX_STANDARD 14)
 
 SET (MAINFOLDER ${PROJECT_SOURCE_DIR})

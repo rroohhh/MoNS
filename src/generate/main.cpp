@@ -2,15 +2,15 @@
   Copyright (C) 2016 by Robin Heinemann. All Rights Reserved.
   main.cpp -- Generate different types of initial conditions
 */
-#include "io/log.h"
-#include "platform/Platform.h"
-#include "simulation/SimulationConfig.h"
-#include "util/PhysicalConstants.h"
-#include <random>
+
+#include "io.h"
+#include "platform.h"
+#include "simulation/simulation_config.h"
+#include "constants.h"
 
 // ToDo(robin): add config options
 
-#define count 100
+#define count 100000
 #define min 1
 #define max 200
 #define dt 0.1
@@ -18,15 +18,17 @@
 #define cmass 200000
 #define mass 1
 
-int main() {
-    std::mt19937 rng;
-    rng.seed(std::random_device()());
-    std::uniform_real_distribution<double> angle(0, 360);
-    std::uniform_real_distribution<double> radius(min, max);
+using namespace mons;
 
-    auto masses     = Platform::allocate<Simtypes::FLOAT>(count);
-    auto positions  = Platform::allocate<Simtypes::v3>(count);
-    auto velocities = Platform::allocate<Simtypes::v3>(count);
+int main() {
+    mt19937 rng;
+    rng.seed(random_device()());
+    uniform_real_distribution<double> angle(0, 360);
+    uniform_real_distribution<double> radius(min, max);
+
+    auto masses     = platform::allocate<f>(count);
+    auto positions  = platform::allocate<v3>(count);
+    auto velocities = platform::allocate<v3>(count);
 
     int i = 0;
 
@@ -51,13 +53,13 @@ int main() {
         positions[i].pos[2] = 0;
 
         velocities[i].pos[0] =
-            sin(a) * sqrt((PhysicalConstants::gamma * cmass) / r);
+            sin(a) * sqrt((constants::physics::gamma * cmass) / r);
         velocities[i].pos[1] =
-            cos(a) * sqrt((PhysicalConstants::gamma * cmass) / r);
+            cos(a) * sqrt((constants::physics::gamma * cmass) / r);
         velocities[i].pos[2] = 0;
     }
 
-    SimulationConfig(count, endtime, dt, masses, positions, velocities)
+    simulation_config(count, endtime, dt, masses, positions, velocities)
         .write_to_file("config", "data");
     return 0;
 }
