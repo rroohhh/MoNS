@@ -2,10 +2,14 @@
 
 namespace mons {
     gravity_naive::gravity_naive(simulation_data * data) noexcept {
-        bodycount     = data->bodycount;
-        mass          = data->mass;
-        positions     = data->positions;
-        accelerations = data->acceleration;
+        bodycount = data->bodycount;
+        mass      = data->mass;
+        px        = data->px;
+        py        = data->py;
+        pz        = data->pz;
+        ax        = data->ax;
+        ay        = data->ay;
+        az        = data->az;
 
         // premultiply all masses with gamma, saves some mul's later on
         for(size i = 0; i < bodycount; i++) {
@@ -28,40 +32,112 @@ namespace mons {
 
         // naive force summation (uses counterforce force equality)
         for(size i = 0; i < count; i++) {
-            f ax = accelerations[i].pos[0];
-            f ay = accelerations[i].pos[1];
-            f az = accelerations[i].pos[2];
+            /*
+                         * __m256d axi = _mm256_set_pd(ax[i], 0, 0, 0);
+             * __m256d ayi = _mm256_set_pd(ay[i], 0, 0, 0);
+             * __m256d azi = _mm256_set_pd(az[i], 0, 0, 0);
+                         */
+            /* __m256d ayi = ay[i]; */
+            /* __m256d azi = az[i]; */
 
-#pragma loop  distribute(enable) vectorize(enable)
-            for(size j = i + 1; j < count; j++) {
+            for(size j = i + 1; j < 4 * (i / 4) + 4; j++) {
                 f dx, dy, dz, dist, p;
-                // calculate distance
-                dx = positions[i].pos[0] - positions[j].pos[0];
-                dy = positions[i].pos[1] - positions[j].pos[1];
-                dz = positions[i].pos[2] - positions[j].pos[2];
+                dx = px[i] - px[j];
+                dy = py[i] - py[j];
+                dz = pz[i] - pz[j];
 
-                /* dist = sqrt(dx * dx + dy * dy + dz * dz); */
                 dist = 1.0 / sqrt(dx * dx + dy * dy + dz * dz);
                 dist = dist * dist * dist;
 
-                // add the respective force components (as acceleration) to the
-                // total acceleration
                 p = dx * dist;
-				ax -= p * mass[j];
-                accelerations[j].pos[0] += p * mass[i];
+                ax[i] -= p * mass[j];
+                ax[j] += p * mass[i];
 
                 p = dy * dist;
-				ay -= p * mass[j];
-                accelerations[j].pos[1] += p * mass[i];
+                ay[i] -= p * mass[j];
+                ay[j] += p * mass[i];
 
                 p = dz * dist;
-				az -= p * mass[j];
-                accelerations[j].pos[2] += p * mass[i];
+                az[i] -= p * mass[j];
+                az[j] += p * mass[i];
             }
 
-            accelerations[i].pos[0] -= ax;
-            accelerations[i].pos[1] -= ay;
-            accelerations[i].pos[2] -= az;
+            __m256d axi = _mm256_set1_pd(0);
+            __m256d ayi = _mm256_set1_pd(0);
+            __m256d azi = _mm256_set1_pd(0);
+            __m256d m   = _mm256_set1_pd(mass[i]);
+            __m256d pxi = _mm256_set1_pd(px[i]);
+            __m256d pyi = _mm256_set1_pd(py[i]);
+            __m256d pzi = _mm256_set1_pd(pz[i]);
+
+            /* #pragma clang loop distribute(enable) vectorize(assume_safety) */
+            for(size j = 4 * (i / 4) + 4; j < count; j += 4) {
+                /* f dx, dy, dz, dist, p; */
+                // calculate distance
+                __m256d dx = _mm256_sub_pd(pxi, _mm256_load_pd(&px[j]));
+                __m256d dy = _mm256_sub_pd(pyi, _mm256_load_pd(&py[j]));
+                __m256d dz = _mm256_sub_pd(pzi, _mm256_load_pd(&pz[j]));
+                /* dy = py[i] - py[j]; */
+                /* dz = pz[i] - pz[j]; */
+
+                /* dist = sqrt(dx * dx + dy * dy + dz * dz); */
+                __m256d dist =
+                    _mm256_div_pd(_mm256_set1_pd(1.0),
+                                  _mm256_sqrt_pd(_mm256_add_pd(
+                                      _mm256_mul_pd(dx, dx),
+                                      _mm256_add_pd(_mm256_mul_pd(dy, dy),
+                                                    _mm256_mul_pd(dz, dz)))));
+
+                dist = _mm256_mul_pd(_mm256_mul_pd(dist, dist), dist);
+
+                // add the respective force components (as acceleration) to the
+                // total acceleration
+
+                dx  = _mm256_mul_pd(dx, dist);
+                axi = _mm256_fmadd_pd(dx, _mm256_load_pd(&mass[j]), axi);
+                _mm256_store_pd(&ax[j],
+                                _mm256_fmadd_pd(dx, m, _mm256_load_pd(&ax[j])));
+
+                dy  = _mm256_mul_pd(dy, dist);
+                ayi = _mm256_fmadd_pd(dy, _mm256_load_pd(&mass[j]), ayi);
+                _mm256_store_pd(&ay[j],
+                                _mm256_fmadd_pd(dy, m, _mm256_load_pd(&ay[j])));
+
+                dz  = _mm256_mul_pd(dz, dist);
+                azi = _mm256_fmadd_pd(dz, _mm256_load_pd(&mass[j]), azi);
+                _mm256_store_pd(&az[j],
+                                _mm256_fmadd_pd(dz, m, _mm256_load_pd(&az[j])));
+            }
+
+            __m256d sum      = _mm256_hadd_pd(axi, ayi);
+            __m128d sum_high = _mm256_extractf128_pd(sum, 1);
+            __m128d result = _mm_add_pd(sum_high, _mm256_castpd256_pd128(sum));
+
+            ax[i] -= result[0];
+            ay[i] -= result[1];
+            az[i] -= azi[0] + azi[1] + azi[2] + azi[3];
+
+            for(size j = count - count % 4; j < count; j++) {
+                f dx, dy, dz, dist, p;
+                dx = px[i] - px[j];
+                dy = py[i] - py[j];
+                dz = pz[i] - pz[j];
+
+                dist = 1.0 / sqrt(dx * dx + dy * dy + dz * dz);
+                dist = dist * dist * dist;
+
+                p = dx * dist;
+                ax[i] -= p * mass[j];
+                ax[j] += p * mass[i];
+
+                p = dy * dist;
+                ay[i] -= p * mass[j];
+                ay[j] += p * mass[i];
+
+                p = dz * dist;
+                az[i] -= p * mass[j];
+                az[j] += p * mass[i];
+            }
         }
     }
 
@@ -79,26 +155,37 @@ namespace mons {
          * 			/\* TIMED_BLOCK(avx_force); *\/
          * 			__m256d dx, dy, dz, dist, p;
      *             size jj = 4 * j;
-     *             dx      = _mm256_sub_pd(_mm256_set1_pd(positions[i].pos[0]),
+     *             dx      =
+     * _mm256_sub_pd(_mm256_set1_pd(positions[i].pos[0]),
      *                                _mm256_set_pd(positions[jj].pos[0],
-     *                                              positions[jj + 1].pos[0],
-     *                                              positions[jj + 2].pos[0],
-     *                                              positions[jj + 3].pos[0]));
+     *                                              positions[jj +
+     * 1].pos[0],
+     *                                              positions[jj +
+     * 2].pos[0],
+     *                                              positions[jj +
+     * 3].pos[0]));
          *
      *             dy = _mm256_sub_pd(_mm256_set1_pd(positions[i].pos[1]),
      *                                _mm256_set_pd(positions[jj].pos[1],
-     *                                              positions[jj + 1].pos[1],
-     *                                              positions[jj + 2].pos[1],
-     *                                              positions[jj + 3].pos[1]));
+     *                                              positions[jj +
+     * 1].pos[1],
+     *                                              positions[jj +
+     * 2].pos[1],
+     *                                              positions[jj +
+     * 3].pos[1]));
          *
      *             dz = _mm256_sub_pd(_mm256_set1_pd(positions[i].pos[2]),
      *                                _mm256_set_pd(positions[jj].pos[2],
-     *                                              positions[jj + 1].pos[2],
-     *                                              positions[jj + 2].pos[2],
-     *                                              positions[jj + 3].pos[2]));
+     *                                              positions[jj +
+     * 1].pos[2],
+     *                                              positions[jj +
+     * 2].pos[2],
+     *                                              positions[jj +
+     * 3].pos[2]));
          *
      *             dist = _mm256_add_pd(
-     *                 _mm256_add_pd(_mm256_mul_pd(dx, dx), _mm256_mul_pd(dy,
+     *                 _mm256_add_pd(_mm256_mul_pd(dx, dx),
+     * _mm256_mul_pd(dy,
      * dy)),
      *                 _mm256_mul_pd(dz, dz));
          *
@@ -162,7 +249,8 @@ namespace mons {
      *             dist = sqrt(dx * dx + dy * dy + dz * dz);
      *             dist = dist * dist * dist;
          *
-     *             // add the respective force components (as acceleration) to
+     *             // add the respective force components (as acceleration)
+     * to
      * the
      *             // total acceleration
      *             p = dx / dist;

@@ -47,29 +47,29 @@ int main(int argc, char ** argv) {
 
         int delta_time = 10;
 
-        sim.add_step_listener([&](f sim_time, size bodycount, v3 * positions) {
+        sim.add_step_listener([&](f sim_time, size bodycount, f * px, f * py, f * pz) {
             TIMED_BLOCK(plot);
             if(buffer == nullptr) {
                 buffer = platform::allocate<float>(2 * bodycount);
             }
 
             /* if(fmod(sim_time, delta_time) == 0) { */
-                for(size i = 0; i < bodycount; i++) {
-                    buffer[2 * i]     = positions[i].pos[0];
-                    buffer[2 * i + 1] = positions[i].pos[1];
-                }
 
-                plot->plot(buffer, bodycount);
+            for(size i = 0; i < bodycount; i++) {
+                buffer[2 * i]     = px[i];
+                buffer[2 * i + 1] = py[i];
+            }
+
+            plot->plot(buffer, bodycount);
             /* } */
         });
     }
 
     // print some information
-    sim.add_finish_listener([](size bodycount, v3 * positions) {
+    sim.add_finish_listener([](size bodycount, f * px, f * py, f * pz) {
         log::info("simulation finished");
         for(size i = 0; i < bodycount; i++) {
-            log::info("{}\t{}\t{}", positions[i].pos[0], positions[i].pos[1],
-                      positions[i].pos[2]);
+            log::info("{}\t{}\t{}", px[i], py[i], pz[i]);
         }
     });
 

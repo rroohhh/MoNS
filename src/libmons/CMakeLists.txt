@@ -13,7 +13,7 @@ SET_TARGET_PROPERTIES(${libmons_BIN} PROPERTIES VERSION "${APPLICATION_VERSION_M
 IF (CMAKE_CXX_COMPILER MATCHES "icpc")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -xHOST -O3 -no-prec-div -static -fp-model fast=2")
 ELSE()
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fno-math-errno -ffinite-math-only -ffast-math")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}	-fno-math-errno -ffinite-math-only -ffast-math -Rpass-analysis=loop-vectorize -Rpass=loop-vectorize -Rpass-missed=loop-vectorize")
 ENDIF()
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}")
 

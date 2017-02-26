@@ -12,6 +12,9 @@
 namespace mons {
     template <typename ForceLaw, typename Integrator>
     struct simulation {
+        using step_listener_func   = function<void(f, size, f *, f *, f *)>;
+        using finish_listener_func = function<void(size, f *, f *, f *)>;
+
         // build a new simulation based on a simulationconfig
         inline simulation(simulation_config * config) noexcept
             : config(config) {
@@ -33,16 +36,16 @@ namespace mons {
         simulation & operator=(const simulation_data & other) = delete;
         simulation & operator=(simulation_data && other) = delete;
 
-        inline int add_step_listener(
-            const function<void(f, size, v3 *)> & listener) noexcept {
+        inline int
+        add_step_listener(const step_listener_func & listener) noexcept {
             TIMED_BLOCK(add_step_listener);
             step_listener.push_back(listener);
 
             return 0;
         }
 
-        inline int add_finish_listener(
-            const function<void(size, v3 *)> & listener) noexcept {
+        inline int
+        add_finish_listener(const finish_listener_func & listener) noexcept {
             TIMED_BLOCK(add_finish_listener);
             finish_listener.push_back(listener);
 
@@ -90,13 +93,13 @@ namespace mons {
 
                     for(const auto & listener : step_listener) {
                         TIMED_BLOCK(simulation_step_listener);
-                        listener(target_time, data->bodycount, data->positions);
+                        listener(target_time, data->bodycount, data->px, data->py, data->pz);
                     }
                 }
 
                 for(const auto & listener : finish_listener) {
                     TIMED_BLOCK(simulation_finish_listener);
-                    listener(data->bodycount, data->positions);
+                    listener(data->bodycount, data->px, data->py, data->pz);
                 }
             });
 
@@ -150,8 +153,8 @@ namespace mons {
 
         thread * simulation_thread = nullptr;
 
-        vector<function<void(f, size, v3 *)>> step_listener;
-        vector<function<void(size, v3 *)>> finish_listener;
+        vector<step_listener_func>   step_listener;
+        vector<finish_listener_func> finish_listener;
     };
 }
 

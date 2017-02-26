@@ -33,8 +33,14 @@ namespace mons {
 
         size bodycount;
         f * __restrict__ mass;
-        v3 * __restrict__ positions;
-        v3 * __restrict__ accelerations;
+
+        f * __restrict__ px;
+        f * __restrict__ py;
+        f * __restrict__ pz;
+
+        f * __restrict__ ax;
+        f * __restrict__ ay;
+        f * __restrict__ az;
     };
 }
 

@@ -10,14 +10,21 @@ namespace mons {
         leapfrog(simulation_data * data) noexcept;
 
         f step(f simTime) noexcept;
-    private:
-        void init(v3 * velocities) noexcept;
 
-        f *    dt;
-        size * bodycount;
-        v3 *   positions;
-        v3 *   old_positions;
-        v3 *   acceleration;
+    private:
+        void init(f * vx, f * vy, f * vz) noexcept;
+
+        f *  dt;
+        size bodycount;
+        f *  px;
+        f *  py;
+        f *  pz;
+        f *  opx;
+        f *  opy;
+        f *  opz;
+        f *  ax;
+        f *  ay;
+        f *  az;
     };
 }
 
