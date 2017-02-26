@@ -11,9 +11,10 @@ TARGET_INCLUDE_DIRECTORIES(${libmons_BIN} PUBLIC ".")
 SET_TARGET_PROPERTIES(${libmons_BIN} PROPERTIES VERSION "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}" OUTPUT_NAME ${libmons_BIN} CLEAN_DIRECT_OUTPUT 1)
 
 IF (CMAKE_CXX_COMPILER MATCHES "icpc")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -xHOST -O3 -no-prec-div -static -fp-model fast=2")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -xHOST -O3 -no-prec-div -static -fp-model fast=2 -qopenmp")
 ELSE()
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}	-fno-math-errno -ffinite-math-only -ffast-math -Rpass-analysis=loop-vectorize -Rpass=loop-vectorize -Rpass-missed=loop-vectorize")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS} -fno-math-errno -ffinite-math-only -ffast-math -fopenmp")
+	#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}	-fno-math-errno -ffinite-math-only -ffast-math -Rpass-analysis=loop-vectorize -Rpass=loop-vectorize -Rpass-missed=loop-vectorize")
 ENDIF()
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}")
 

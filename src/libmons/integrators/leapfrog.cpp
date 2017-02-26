@@ -21,8 +21,9 @@ namespace mons {
     // calculate first step with euler's method, because no old position is
     // known
     inline void leapfrog::init(f * vx, f * vy, f * vz) noexcept {
-        // ToDo(robin): is this always safe (px, opx continious?)
-        platform::copy(px, opx, 3 * bodycount);
+        platform::copy(px, opx, bodycount);
+        platform::copy(py, opy, bodycount);
+        platform::copy(pz, opz, bodycount);
 
         f   this_dt, dt2;
 
